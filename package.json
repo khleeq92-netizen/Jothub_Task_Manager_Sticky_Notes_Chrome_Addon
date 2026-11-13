@@ -1,0 +1,32 @@
+{
+  "name": "jot-hub",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Jot Hub \u2014 notes, tasks and templates in a Chrome extension (Manifest V3).",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "package": "node scripts/build.mjs --zip",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm test && npm run package && node scripts/e2e.mjs",
+    "e2e": "npm run build && node scripts/e2e.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.287",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "esbuild": "^0.24.0",
+    "fflate": "^0.8.2",
+    "jsdom": "^25.0.1",
+    "puppeteer-core": "^25.17.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}
