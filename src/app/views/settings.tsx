@@ -20,7 +20,7 @@ import { useSync } from './planner';
 declare const __APP_VERSION__: string;
 
 const SHORTCUTS: [string, string][] = [
-  ['Alt + Shift + J', 'Open Taskmark (toolbar popup)'],
+  ['Alt + Shift + J', 'Open Task-Mark-stickynote (toolbar popup)'],
   ['Alt + Shift + N', 'New sticky note on the current page'],
   ['Alt + Shift + T', 'Quick task from the current page'],
   ['Alt + Shift + H', 'Open the full hub in a tab'],
@@ -124,7 +124,7 @@ export function SettingsView({ section }: { section: string }) {
 
       <section className="panel" id="settings-about">
         <h2>About</h2>
-        <p className="muted small">Taskmark {typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : ''} · Plan: {currentPlan().label}</p>
+        <p className="muted small">Task-Mark-stickynote {typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : ''} · Plan: {currentPlan().label}</p>
         <p className="muted small">Your notes and tasks are stored on this device. Nothing is sent anywhere unless you sign in to cloud sync, and then only to your own Firebase project.</p>
       </section>
     </div>
@@ -289,7 +289,7 @@ function BackupSection() {
 
   const exportJson = () =>
     guard(async () => {
-      downloadFile(`taskmark-backup-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(buildBackup(await loadAll()), null, 2), 'application/json');
+      downloadFile(`task-mark-stickynote-backup-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(buildBackup(await loadAll()), null, 2), 'application/json');
     });
 
   const pickFile = () => {
@@ -342,7 +342,7 @@ function BackupSection() {
             <div key={s.id} className="snap-row">
               <span className="grow"><strong>{new Date(s.at).toLocaleString()}</strong><span className="muted small"> · {REASON[s.reason]} · {s.count} items · {sizeLabel(s.bytes)}</span></span>
               <button className="btn small" onClick={() => void restoreLocal(s)}><RotateCcw size={14} /> Restore</button>
-              <button className="btn small" aria-label="Download backup file" title="Download backup file" onClick={async () => { const text = await readSnapshot(s.id); if (text) downloadFile(`taskmark-backup-${new Date(s.at).toISOString().slice(0, 10)}.json`, text, 'application/json'); }}><Download size={14} /></button>
+              <button className="btn small" aria-label="Download backup file" title="Download backup file" onClick={async () => { const text = await readSnapshot(s.id); if (text) downloadFile(`task-mark-stickynote-backup-${new Date(s.at).toISOString().slice(0, 10)}.json`, text, 'application/json'); }}><Download size={14} /></button>
               <button className="btn small" aria-label="Delete backup" onClick={async () => { if (await confirmDialog({ title: 'Delete this backup?', message: 'Your current notes and tasks are not affected.', confirmLabel: 'Delete backup', danger: true })) await deleteSnapshot(s.id); }}><Trash2 size={14} /></button>
             </div>
           ))}

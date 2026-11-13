@@ -134,7 +134,7 @@ async function persist(note: Note): Promise<Note> {
     const [saved] = await save(note);
     return saved;
   } catch {
-    toast('Taskmark was updated. Reload this page to keep editing notes.');
+    toast('Task-Mark-stickynote was updated. Reload this page to keep editing notes.');
     return note;
   }
 }
@@ -148,7 +148,7 @@ function createView(initial: Note, index: number): View {
   const title = h('input', { class: 'title', placeholder: 'Sticky note', 'aria-label': 'Note title', maxlength: '120' });
   const minBtn = h('button', { class: 'ib', title: 'Minimize', 'aria-label': 'Minimize', text: '–' });
   const menuBtn = h('button', { class: 'ib', title: 'More', 'aria-label': 'More options', text: '⋯' });
-  const closeBtn = h('button', { class: 'ib', title: 'Remove from this page (the note stays in Taskmark)', 'aria-label': 'Remove from this page', text: '✕' });
+  const closeBtn = h('button', { class: 'ib', title: 'Remove from this page (the note stays in Task-Mark-stickynote)', 'aria-label': 'Remove from this page', text: '✕' });
   const head = h('div', { class: 'head' }, h('div', { class: 'grip' }), title, minBtn, menuBtn, closeBtn);
   const tools = h('div', { class: 'tools' });
   const body = h('div', { class: 'body jh-content', contenteditable: 'true', role: 'textbox', 'aria-multiline': 'true', 'aria-label': 'Note text' });
@@ -200,7 +200,7 @@ function createView(initial: Note, index: number): View {
     commit(change, 0);
     toast(message, () => void persist({ ...note, ...before }));
   };
-  closeBtn.addEventListener('click', () => dismiss({ scope: 'none' }, 'Removed from the page. The note is still in Taskmark.'));
+  closeBtn.addEventListener('click', () => dismiss({ scope: 'none' }, 'Removed from the page. The note is still in Task-Mark-stickynote.'));
 
   // --- menu ---
   const buildMenu = () => {
@@ -235,8 +235,8 @@ function createView(initial: Note, index: number): View {
       });
       menu.append(item);
     };
-    action('Open in Taskmark', () => void platform.runtime.send({ type: 'open-app', hash: `#/notes/${note.id}` }).catch(() => {}));
-    action('Remove from page (keep note)', () => dismiss({ scope: 'none' }, 'Removed from the page. The note is still in Taskmark.'));
+    action('Open in Task-Mark-stickynote', () => void platform.runtime.send({ type: 'open-app', hash: `#/notes/${note.id}` }).catch(() => {}));
+    action('Remove from page (keep note)', () => dismiss({ scope: 'none' }, 'Removed from the page. The note is still in Task-Mark-stickynote.'));
     action('Delete note', () => dismiss({ deletedAt: Date.now() }, 'Note moved to trash.'), true);
   };
   menuBtn.addEventListener('click', () => {
@@ -387,9 +387,9 @@ function quickTask(text: string) {
     try {
       await save(newTask({ title: title.value.trim(), due: due.value, priority: priority.value as Priority, sourceUrl: location.href, description: document.title, reminder: due.value ? settings.defaultReminder : null }));
       form.remove();
-      toast('Task added to Taskmark');
+      toast('Task added to Task-Mark-stickynote');
     } catch {
-      toast('Taskmark was updated. Reload this page and try again.');
+      toast('Task-Mark-stickynote was updated. Reload this page and try again.');
     }
   });
   target.append(form);

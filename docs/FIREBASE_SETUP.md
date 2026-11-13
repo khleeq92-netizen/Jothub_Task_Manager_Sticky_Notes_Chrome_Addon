@@ -1,13 +1,13 @@
 # Cloud sync setup (Firebase)
 
-Cloud sync is optional. Taskmark works fully without it. Set this up once, then sign in on each computer.
+Cloud sync is optional. Task-Mark-stickynote works fully without it. Set this up once, then sign in on each computer.
 
 You will end up with three values:
 
 | Value | Example | Required |
 | --- | --- | --- |
 | Web API key | `AIzaSy…` | Yes |
-| Project ID | `taskmark-12345` | Yes |
+| Project ID | `task-mark-12345` | Yes |
 | Google OAuth client ID | `1234567890-abc.apps.googleusercontent.com` | Only for "Continue with Google" |
 
 The Firebase free ("Spark") plan is enough for personal use.
@@ -58,17 +58,17 @@ These rules mean a signed-in user can read and write only documents under their 
 2. Copy **Project ID** and **Web API key**.
    If no Web API key is shown, scroll down to **Your apps**, click the **</>** (Web) icon, register an app with any nickname, and copy `apiKey` from the snippet it shows.
 
-## 6. Give the values to Taskmark
+## 6. Give the values to Task-Mark-stickynote
 
 Either way works; the first needs no rebuild.
 
-**A. In the extension (recommended):** open Taskmark → **Settings → Cloud sync → Firebase project details**, paste the values, **Save details**. They are stored only on that computer, so repeat this on each one.
+**A. In the extension (recommended):** open Task-Mark-stickynote → **Settings → Cloud sync → Firebase project details**, paste the values, **Save details**. They are stored only on that computer, so repeat this on each one.
 
 **B. At build time:** copy `.env.example` to `.env.local`, fill it in, and run `npm run package`. The values are then built into your private copy. `.env.local` is git-ignored — never commit it.
 
 ```
 FIREBASE_API_KEY=AIzaSy...
-FIREBASE_PROJECT_ID=taskmark-12345
+FIREBASE_PROJECT_ID=task-mark-12345
 GOOGLE_OAUTH_CLIENT_ID=1234567890-abc.apps.googleusercontent.com
 ```
 
@@ -78,14 +78,14 @@ You can now use **Create account** / **Sign in** with email and password.
 
 Google needs to know the address the extension returns to after sign-in.
 
-1. In Taskmark, open **Settings → Cloud sync → Firebase project details** and copy the **Redirect URI**. It looks like `https://abcdefghijklmnop.chromiumapp.org/`.
+1. In Task-Mark-stickynote, open **Settings → Cloud sync → Firebase project details** and copy the **Redirect URI**. It looks like `https://abcdefghijklmnop.chromiumapp.org/`.
 2. Go to <https://console.cloud.google.com/apis/credentials> and select the same project (top bar).
 3. **Create credentials → OAuth client ID**. If asked, configure the consent screen first (User type: External; add yourself as a test user).
 4. Application type: **Web application**.
 5. Under **Authorized redirect URIs**, click **Add URI** and paste the Redirect URI from step 1.
 6. **Create**, then copy the **Client ID**.
 7. Back in the Firebase console: **Authentication → Sign-in method → Google → Safelist client IDs from external projects**, add that Client ID, **Save**.
-8. Paste the Client ID into Taskmark's **Google OAuth client ID** field and **Save details**.
+8. Paste the Client ID into Task-Mark-stickynote's **Google OAuth client ID** field and **Save details**.
 
 **Windows and Mac:** an unpacked extension gets its ID from the folder it is loaded from, so the Redirect URI is usually different on each computer. Copy the Redirect URI on each one and add all of them to the same OAuth client (step 5). Email/password sign-in does not need this.
 

@@ -47,7 +47,7 @@ const server = http.createServer((req, res) => {
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
 const base = `http://127.0.0.1:${server.address().port}`;
 
-const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'taskmark-e2e-'));
+const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'task-mark-stickynote-e2e-'));
 const browser = await puppeteer.launch({ executablePath, headless: true, pipe: true, enableExtensions: true, userDataDir: profile, args: [...(process.getuid?.() === 0 ? ['--no-sandbox'] : []), '--no-first-run', '--no-default-browser-check'] });
 
 try {
@@ -160,7 +160,13 @@ try {
       check('editing in the hub updates the floating note live', !!live);
     } else {
       // the task editor must fit a small window and scroll down to its last controls
-      await hub.setViewport({ width: file === 'popup.html' ? 500 : 380, height: 600 });
+      await hub.setViewport({ width: file === 'popup.html' ? 500 : 340, height: 600 });
+      const fits = await until(() => hub.evaluate(() => {
+        const bar = document.querySelector('.quick-bar');
+        const last = bar && [...bar.children].at(-1).getBoundingClientRect();
+        return bar && document.documentElement.scrollWidth <= innerWidth && last.right <= innerWidth ? { width: innerWidth } : null;
+      }));
+      check(`${file} top bar fits without sideways scrolling`, !!fits, fits ? `${fits.width}px wide` : '');
       await hub.evaluate(() => (location.hash = '#/tasks'));
       const opened = await until(() => hub.evaluate(() => {
         const button = [...document.querySelectorAll('button')].find((b) => /new task/i.test(b.textContent));

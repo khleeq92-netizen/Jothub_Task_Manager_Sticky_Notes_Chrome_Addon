@@ -1,9 +1,9 @@
 {
-  "name": "taskmark",
-  "version": "2.1.0",
+  "name": "task-mark-stickynote",
+  "version": "2.1.1",
   "private": true,
   "type": "module",
-  "description": "Taskmark \u2014 tasks, sticky notes and reminders in a Chrome extension (Manifest V3).",
+  "description": "Task-Mark-stickynote \u2014 tasks, sticky notes and reminders in a Chrome extension (Manifest V3).",
   "scripts": {
     "build": "node scripts/build.mjs",
     "watch": "node scripts/build.mjs --watch",

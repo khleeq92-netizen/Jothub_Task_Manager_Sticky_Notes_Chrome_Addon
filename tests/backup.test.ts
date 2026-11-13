@@ -61,9 +61,9 @@ describe('export and restore', () => {
 });
 
 describe('backup validation', () => {
-  it('rejects files that are not Taskmark backups', () => {
+  it('rejects files that are not Task-Mark-stickynote backups', () => {
     expect(() => parseBackup('not json')).toThrow(/not valid JSON/);
-    expect(() => parseBackup('{"hello":1}')).toThrow(/not a Taskmark backup/);
+    expect(() => parseBackup('{"hello":1}')).toThrow(/not a Task-Mark-stickynote backup/);
     expect(() => parseBackup('{"app":"jot-hub","format":99,"records":[]}')).toThrow(/newer version/);
   });
 
@@ -75,7 +75,7 @@ describe('backup validation', () => {
     expect((records[0] as Note).html).toBe('<b>hi</b>');
   });
 
-  it('restores backups made before the rename to Taskmark', () => {
+  it('restores backups made before the rename', () => {
     const { records } = parseBackup(JSON.stringify({ app: 'jot-hub', format: 1, records: [{ type: 'note', id: 'old1', html: '<p>kept</p>', text: 'kept' }] }));
     expect(records.map((r) => r.id)).toEqual(['old1']);
   });

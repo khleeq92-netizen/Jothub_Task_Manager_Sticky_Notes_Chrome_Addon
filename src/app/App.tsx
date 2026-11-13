@@ -130,7 +130,7 @@ export function App() {
   return (
     <div className="shell">
       <nav className="sidebar" aria-label="Main">
-        <div className="brand"><StickyNote size={20} /><span>Taskmark</span></div>
+        <div className="brand"><StickyNote size={20} /><span>Task-Mark-stickynote</span></div>
         {NAV.map((item) => (
           <button key={item.view} className={`nav-item ${route.view === item.view ? 'active' : ''}`} aria-current={route.view === item.view ? 'page' : undefined} title={item.label} onClick={() => go(item.view)}>
             {item.icon}

@@ -62,7 +62,7 @@ const page = (surface) => `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Taskmark</title>
+<title>Task-Mark-stickynote</title>
 <link rel="icon" href="icons/icon48.png">
 <link rel="stylesheet" href="app.css">
 </head>
@@ -97,7 +97,7 @@ function makeZip() {
     }
   };
   walk(dist);
-  const name = `taskmark-extension-v${pkg.version}.zip`;
+  const name = `task-mark-stickynote-extension-v${pkg.version}.zip`;
   fs.writeFileSync(path.join(root, name), zipSync(files, { level: 9 }));
   console.log(`\n  ${name}  ${(fs.statSync(path.join(root, name)).size / 1024).toFixed(0)} KB`);
 }

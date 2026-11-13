@@ -107,9 +107,9 @@ select { padding-right: 6px; }
 
 .main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .topbar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
-.search { position: relative; flex: 1; max-width: 520px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--muted); }
+.search { position: relative; flex: 1; min-width: 0; max-width: 520px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--muted); }
 .search:focus-within { border-color: var(--accent); }
-.search input { flex: 1; border: 0 !important; background: transparent !important; padding: 8px 0 !important; color: var(--text); outline: none; }
+.search input { flex: 1; min-width: 0; width: 100%; border: 0 !important; background: transparent !important; padding: 8px 0 !important; color: var(--text); outline: none; }
 .search .hint { font-size: 11px; }
 .search-results { position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 30; max-height: 420px; overflow-y: auto; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); color: var(--text); animation: rise 0.12s ease-out; }
 .search-results button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 8px; border-radius: 8px; text-align: left; }
@@ -117,7 +117,7 @@ select { padding-right: 6px; }
 .search-results button .ellipsis { flex: 1; }
 .result-group { padding: 6px 8px 2px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
 .pad { padding: 8px; }
-.quick-bar { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.quick-bar { flex: none; display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .btn.compact { padding: 6px 10px; }
 .content { flex: 1; min-height: 0; overflow-y: auto; animation: fade 0.16s ease-out; }
 @keyframes fade { from { opacity: 0; } }

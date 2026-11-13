@@ -1,10 +1,10 @@
-# Taskmark — project handoff
+# Task-Mark-stickynote — project handoff
 
-Paste this file into a new chat, and attach `taskmark-all-source.md` (all source in one file) or `taskmark-source-v2.1.0.zip`. Together they are everything needed to continue.
+Paste this file into a new chat, and attach `task-mark-stickynote-all-source.md` (all source in one file) or `task-mark-stickynote-source-v2.1.1.zip`. Together they are everything needed to continue.
 
 ## What this is
 
-**Taskmark** is a Chrome extension (Manifest V3, React + TypeScript) for personal use on Chrome for **Windows and macOS**: sticky notes that float on web pages, a task manager with reminders, templates, backups, and optional cloud sync through the owner's own Firebase project. It is local-first and works fully offline and without an account. Version 2.1.0.
+**Task-Mark-stickynote** is a Chrome extension (Manifest V3, React + TypeScript) for personal use on Chrome for **Windows and macOS**: sticky notes that float on web pages, a task manager with reminders, templates, backups, and optional cloud sync through the owner's own Firebase project. It is local-first and works fully offline and without an account. Version 2.1.1.
 
 The owner wants complete, working features with few questions — no roadmaps, placeholders or mock features.
 
@@ -20,7 +20,7 @@ Not yet verified:
 - Whether the reminder window comes to the front when another app (not Chrome) is active; this depends on the OS. Printing, right-click menu items and the side-panel button have not been exercised by automation.
 
 Recent changes:
-- Renamed from **Jot Hub** to **Taskmark** (v2.1.0). Only user-facing text changed. Internal identifiers were kept on purpose so existing data carries over: storage keys (`r:*`, `local:*`), Firestore paths, message types (`jh-*`) and the content script's `jot-hub-notes` element. New backup files say `app: 'taskmark'`; files saying `'jot-hub'` still restore. The GitHub repository is `khleeq92-netizen/Jothub_Task_Manager_Sticky_Notes_Chrome_Addon`.
+- Renamed from **Jot Hub** to **Task-Mark-stickynote** (v2.1.1; v2.1.0 was briefly called Taskmark; short name in Chrome: Task-Mark). Only user-facing text changed. Internal identifiers were kept on purpose so existing data carries over: storage keys (`r:*`, `local:*`), Firestore paths, message types (`jh-*`) and the content script's `jot-hub-notes` element. New backup files say `app: 'taskmark'` (internal id, kept); files saying `'jot-hub'` still restore. The GitHub repository is `khleeq92-netizen/Jothub_Task_Manager_Sticky_Notes_Chrome_Addon`.
 - Reminder alerts: when a reminder is due, `alert.html` opens in its own pop-up window in front of the user's work, a chime plays from an offscreen document (`src/platform/offscreen.ts`) until any click or about 30 s, and a system notification is shown too. Buttons: Mark done, Open task, Dismiss, Snooze 5/15/60 min. Pop-up and sound are per browser profile (`local:alertPrefs`); the synced `notifications` setting is the master switch. Snoozes are device-local (`local:snoozes`). Logic in `src/core/alerts.ts` and `src/background/index.ts`.
 - Dialogs and the task editor scroll instead of overflowing short windows.
 - Floating notes got a ✕ button (removes the note from the page, keeps it in the hub, with Undo).
@@ -31,7 +31,7 @@ Needs Node.js 20+.
 
 - `npm install`
 - `npm run build` → `dist/` (load this folder via `chrome://extensions` → Developer mode → Load unpacked)
-- `npm run package` → `taskmark-extension-v2.1.0.zip`
+- `npm run package` → `task-mark-stickynote-extension-v2.1.1.zip`
 - `npm test`, `npm run typecheck`, `npm run e2e`, `npm run check` (all of them)
 - `node scripts/bundle-source.mjs` → regenerates the `handoff/` files
 
@@ -63,7 +63,7 @@ Build tool is esbuild (`scripts/build.mjs`), producing three bundles: `app.js` (
 - Trash empties after 30 days; newest 5 backups kept locally and in the cloud.
 - `src/core/entitlements.ts` is the single gate for future paid plans; everything is unlocked now.
 - Shortcuts: `Alt+Shift+J/N/T/H`. Accent themes, light/dark, note text is always dark on coloured paper.
-- The earlier simple popup extension ("Jot" v1) is in `legacy-jot-v1/`; its backups import into Taskmark.
+- The earlier simple popup extension ("Jot" v1) is in `legacy-jot-v1/`; its backups import into Task-Mark-stickynote.
 
 ## Open items
 

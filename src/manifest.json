@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Taskmark — Tasks & Sticky Notes",
-  "short_name": "Taskmark",
+  "name": "Task-Mark-stickynote",
+  "short_name": "Task-Mark",
   "version": "0.0.0",
   "description": "Sticky notes on any page, a task manager with reminders, ready-made templates and optional cloud sync. Works offline.",
   "minimum_chrome_version": "116",
@@ -13,7 +13,7 @@
   ],
   "background": { "service_worker": "background.js" },
   "action": {
-    "default_title": "Taskmark",
+    "default_title": "Task-Mark-stickynote",
     "default_popup": "popup.html",
     "default_icon": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }
   },
@@ -22,7 +22,7 @@
     { "matches": ["http://*/*", "https://*/*"], "js": ["content.js"], "run_at": "document_idle" }
   ],
   "commands": {
-    "_execute_action": { "suggested_key": { "default": "Alt+Shift+J" }, "description": "Open Taskmark" },
+    "_execute_action": { "suggested_key": { "default": "Alt+Shift+J" }, "description": "Open Task-Mark-stickynote" },
     "new-note": { "suggested_key": { "default": "Alt+Shift+N" }, "description": "New sticky note on the current page" },
     "quick-task": { "suggested_key": { "default": "Alt+Shift+T" }, "description": "Quick task from the current page" },
     "open-hub": { "suggested_key": { "default": "Alt+Shift+H" }, "description": "Open the full hub in a tab" }

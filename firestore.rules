@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Taskmark: every user can read and write only their own data.
+// Task-Mark-stickynote: every user can read and write only their own data.
 // Publish this in Firebase console → Firestore Database → Rules.
 service cloud.firestore {
   match /databases/{database}/documents {

@@ -68,8 +68,8 @@ export function parseBackup(text: string): { records: AnyRecord[]; rejected: num
     return { records, rejected: data.notes.length - records.length };
   }
 
-  if ((data?.app !== 'taskmark' && data?.app !== 'jot-hub') || !Array.isArray(data.records)) throw new Error('This file is not a Taskmark backup.');
-  if (data.format !== 1) throw new Error('This backup was made by a newer version of Taskmark.');
+  if ((data?.app !== 'taskmark' && data?.app !== 'jot-hub') || !Array.isArray(data.records)) throw new Error('This file is not a Task-Mark-stickynote backup.');
+  if (data.format !== 1) throw new Error('This backup was made by a newer version of Task-Mark-stickynote.');
 
   const canSanitize = typeof DOMParser !== 'undefined';
   const records: AnyRecord[] = [];
