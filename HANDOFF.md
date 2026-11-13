@@ -14,8 +14,13 @@ Working and tested:
 - 47 unit tests pass (`npm test`).
 - 37 end-to-end checks pass against the built extension (`npm run e2e`), on macOS (Chrome 157) and Linux (Chromium). As root, e2e adds `--no-sandbox` automatically.
 
+Verified live (14 Nov 2026):
+- **Cloud sync against the real Firebase project** `task-mark-stickynote` (Spark/free plan, separate from the owner's other projects). Email/password account created, records and a cloud backup uploaded (`users/<uid>/items`, `users/<uid>/backups`), and a second Chrome profile signed in with the same email received the data.
+- The owner's private build has the Firebase values in `.env.local` (git-ignored). Use the same zip in every profile and computer; each just signs in.
+
 Not yet verified:
-- **Cloud sync against a live Firebase project.** No Firebase project exists yet. Sync is tested only against a simulated cloud plus request-format tests. Google sign-in is untested.
+- Google sign-in (provider enabled in Firebase, but no OAuth client ID set up; the owner uses email/password).
+- Conflict copies and permanent-delete stubs against the live project (covered only by simulated-cloud tests).
 - **Windows.** Nothing is OS-specific, but it has only been run on macOS.
 - Whether the reminder window comes to the front when another app (not Chrome) is active; this depends on the OS. Printing, right-click menu items and the side-panel button have not been exercised by automation.
 
@@ -67,7 +72,7 @@ Build tool is esbuild (`scripts/build.mjs`), producing three bundles: `app.js` (
 
 ## Open items
 
-1. Create a Firebase project and run the six-step checklist at the end of `docs/FIREBASE_SETUP.md`.
+1. Firebase: done and working with email sign-in. Remaining from the checklist: edit on one computer and confirm on another computer (two profiles on one Mac already work).
 2. Install on Windows and report differences.
 3. Manually check: right-click menu, side panel, floating window, reminder pop-up and sound with another app in front, print, shortcuts.
 4. Possible later work: pricing page and paid plans, Firefox/Safari builds, Chrome Web Store listing (needs a contact line in `PRIVACY.md`).
