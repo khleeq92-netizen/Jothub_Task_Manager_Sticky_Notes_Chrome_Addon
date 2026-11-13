@@ -61,9 +61,9 @@ describe('export and restore', () => {
 });
 
 describe('backup validation', () => {
-  it('rejects files that are not Jot Hub backups', () => {
+  it('rejects files that are not Taskmark backups', () => {
     expect(() => parseBackup('not json')).toThrow(/not valid JSON/);
-    expect(() => parseBackup('{"hello":1}')).toThrow(/not a Jot Hub backup/);
+    expect(() => parseBackup('{"hello":1}')).toThrow(/not a Taskmark backup/);
     expect(() => parseBackup('{"app":"jot-hub","format":99,"records":[]}')).toThrow(/newer version/);
   });
 
@@ -73,6 +73,11 @@ describe('backup validation', () => {
     expect(records).toHaveLength(1);
     expect(rejected).toBe(3);
     expect((records[0] as Note).html).toBe('<b>hi</b>');
+  });
+
+  it('restores backups made before the rename to Taskmark', () => {
+    const { records } = parseBackup(JSON.stringify({ app: 'jot-hub', format: 1, records: [{ type: 'note', id: 'old1', html: '<p>kept</p>', text: 'kept' }] }));
+    expect(records.map((r) => r.id)).toEqual(['old1']);
   });
 
   it('imports backups from the earlier Jot extension', () => {

@@ -1,4 +1,4 @@
-# Jot Hub — Notes, Tasks & Templates
+# Taskmark — Tasks & Sticky Notes
 
 A personal productivity hub as a Chrome extension (Manifest V3): sticky notes that float on web pages, a task manager with reminders, ready-made templates, backups, and optional cloud sync through your own Firebase project.
 
@@ -12,14 +12,14 @@ Works in Chrome on **Windows and macOS** (same package for both). Requires Chrom
 
 You can install from the ZIP or from the `dist/` folder — they contain the same build.
 
-1. Unzip `jot-hub-extension-v2.0.0.zip` to a folder you will keep (for example `Documents/JotHub`).
+1. Unzip `taskmark-extension-v2.1.0.zip` to a folder you will keep (for example `Documents/Taskmark`).
    Or skip this and use the `dist/` folder inside this project.
 2. Open `chrome://extensions` in Chrome.
 3. Turn on **Developer mode** (top right).
 4. Click **Load unpacked** and choose the unzipped folder (the one that contains `manifest.json`).
-5. Click the puzzle-piece icon in the toolbar and pin **Jot Hub**.
+5. Click the puzzle-piece icon in the toolbar and pin **Taskmark**.
 
-The steps are identical on Windows and Mac. To update later, replace the folder's contents and click the reload arrow on the Jot Hub card.
+The steps are identical on Windows and Mac. To update later, replace the folder's contents and click the reload arrow on the Taskmark card.
 
 > Pages that were already open before you installed the extension need one reload before floating notes work on them.
 
@@ -65,7 +65,7 @@ Eleven ready-made templates (Daily Planner, Weekly Planner, Monthly Goals, Meeti
 
 | Shortcut | Action |
 | --- | --- |
-| `Alt+Shift+J` | Open Jot Hub |
+| `Alt+Shift+J` | Open Taskmark |
 | `Alt+Shift+N` | New sticky note on the current page |
 | `Alt+Shift+T` | Quick task from the current page |
 | `Alt+Shift+H` | Open the full hub in a tab |
@@ -77,7 +77,7 @@ On a Mac, Alt is the Option key. Change the first four at `chrome://extensions/s
 
 ### Coming from the earlier "Jot" extension
 
-The first version now lives in `legacy-jot-v1/`. To bring its notes over: in old Jot choose **⋯ → Export backup**, then in Jot Hub use **Settings → Backup and restore → Restore from JSON file**.
+The first version now lives in `legacy-jot-v1/`. To bring its notes over: in old Jot choose **⋯ → Export backup**, then in Taskmark use **Settings → Backup and restore → Restore from JSON file**.
 
 ---
 
@@ -123,7 +123,7 @@ npm run e2e
 | --- | --- |
 | `npm run build` | Production build into `dist/` |
 | `npm run watch` | Rebuild on change (reload the extension in Chrome to pick it up) |
-| `npm run package` | Build and create `jot-hub-extension-v<version>.zip` |
+| `npm run package` | Build and create `taskmark-extension-v<version>.zip` |
 | `npm run typecheck` | TypeScript check |
 | `npm test` | Unit tests (notes, tasks, backup/restore, sync) |
 | `npm run e2e` | Loads the built extension into your installed Chrome with a throwaway profile and tests it end to end |

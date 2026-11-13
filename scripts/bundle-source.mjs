@@ -24,7 +24,7 @@ dirs.forEach(walk);
 
 fs.mkdirSync(out, { recursive: true });
 const zip = {};
-let text = `# Jot Hub v${pkg.version} — complete source in one file\n\nEach section below is one file. Paths are relative to the project root.\nBinary files (icons) are not included here; they are in the source ZIP.\n`;
+let text = `# Taskmark v${pkg.version} — complete source in one file\n\nEach section below is one file. Paths are relative to the project root.\nBinary files (icons) are not included here; they are in the source ZIP.\n`;
 for (const file of files) {
   const data = fs.readFileSync(path.join(root, file));
   zip[file] = new Uint8Array(data);
@@ -32,7 +32,7 @@ for (const file of files) {
   const fence = file.endsWith('.md') ? '````' : '```';
   text += `\n\n---\n\n## FILE: ${file}\n\n${fence}${path.extname(file).slice(1)}\n${data.toString('utf8').replace(/\s+$/, '')}\n${fence}\n`;
 }
-fs.writeFileSync(path.join(out, 'jot-hub-all-source.md'), text);
-fs.writeFileSync(path.join(out, `jot-hub-source-v${pkg.version}.zip`), zipSync(zip, { level: 9 }));
+fs.writeFileSync(path.join(out, 'taskmark-all-source.md'), text);
+fs.writeFileSync(path.join(out, `taskmark-source-v${pkg.version}.zip`), zipSync(zip, { level: 9 }));
 console.log(`${files.length} files`);
 for (const f of fs.readdirSync(out)) console.log(`  handoff/${f}  ${(fs.statSync(path.join(out, f)).size / 1024).toFixed(0)} KB`);

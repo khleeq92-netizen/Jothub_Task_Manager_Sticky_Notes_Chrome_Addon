@@ -5,7 +5,8 @@ import { sanitizeHtml } from './sanitize';
 import { newNote, validateRecord, type AnyRecord, type Settings } from './types';
 
 export interface BackupFile {
-  app: 'jot-hub';
+  /** 'taskmark'; files made before the rename say 'jot-hub' and are still accepted. */
+  app: 'taskmark' | 'jot-hub';
   format: 1;
   exportedAt: string;
   records: AnyRecord[];
@@ -31,7 +32,7 @@ const SNAP = 'snap:';
 const PERIOD: Record<Settings['autoBackup'], number> = { off: Infinity, daily: 86400000, weekly: 7 * 86400000, monthly: 30 * 86400000 };
 
 export const buildBackup = (records: AnyRecord[], now = Date.now()): BackupFile => ({
-  app: 'jot-hub',
+  app: 'taskmark',
   format: 1,
   exportedAt: new Date(now).toISOString(),
   records: records.filter((r) => !r.purged),
@@ -67,8 +68,8 @@ export function parseBackup(text: string): { records: AnyRecord[]; rejected: num
     return { records, rejected: data.notes.length - records.length };
   }
 
-  if (data?.app !== 'jot-hub' || !Array.isArray(data.records)) throw new Error('This file is not a Jot Hub backup.');
-  if (data.format !== 1) throw new Error('This backup was made by a newer version of Jot Hub.');
+  if ((data?.app !== 'taskmark' && data?.app !== 'jot-hub') || !Array.isArray(data.records)) throw new Error('This file is not a Taskmark backup.');
+  if (data.format !== 1) throw new Error('This backup was made by a newer version of Taskmark.');
 
   const canSanitize = typeof DOMParser !== 'undefined';
   const records: AnyRecord[] = [];

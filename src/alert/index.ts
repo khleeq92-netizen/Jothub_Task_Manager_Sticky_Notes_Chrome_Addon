@@ -112,7 +112,7 @@ async function render() {
   }
   const count = cards.length;
   heading.textContent = count === 1 ? 'Task reminder' : `${count} task reminders`;
-  document.title = `⏰ ${count === 1 ? 'Task reminder' : `${count} reminders`} — Jot Hub`;
+  document.title = `⏰ ${count === 1 ? 'Task reminder' : `${count} reminders`} — Taskmark`;
   list.replaceChildren(...cards);
 }
 

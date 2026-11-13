@@ -47,7 +47,7 @@ const server = http.createServer((req, res) => {
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
 const base = `http://127.0.0.1:${server.address().port}`;
 
-const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'jot-hub-e2e-'));
+const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'taskmark-e2e-'));
 const browser = await puppeteer.launch({ executablePath, headless: true, pipe: true, enableExtensions: true, userDataDir: profile, args: [...(process.getuid?.() === 0 ? ['--no-sandbox'] : []), '--no-first-run', '--no-default-browser-check'] });
 
 try {
@@ -217,10 +217,10 @@ try {
   const alertTitle = await until(() => alertPage?.evaluate(() => document.querySelector('.card h2')?.textContent));
   const alertWindow = await sw(async () => (await chrome.windows.getAll()).find((w) => w.type === 'popup'));
   check('a due task opens a reminder window in front', alertTitle === 'Pay the electricity bill' && !!alertWindow?.focused, alertWindow ? `${alertWindow.width}x${alertWindow.height}` : 'no window');
-  const chime = await sw(() => chrome.runtime.sendMessage({ target: 'jh-offscreen', action: 'status' }).catch(() => null));
+  const chime = await until(() => sw(() => chrome.runtime.sendMessage({ target: 'jh-offscreen', action: 'status' }).catch(() => null)).then((r) => (r?.playing ? r : null)));
   check('the reminder chime plays', !!chime?.playing);
-  const notified = await sw(() => chrome.notifications.getAll());
-  check('a system notification is shown as well', 'task:e2e-due' in notified);
+  const notified = await until(() => sw(() => chrome.notifications.getAll()).then((n) => ('task:e2e-due' in n ? n : null)));
+  check('a system notification is shown as well', !!notified);
   await alertPage.evaluate(() => document.querySelector('.chip').click());
   const snoozed = await until(async () => {
     const s = await sw(() => chrome.storage.local.get('local:snoozes'));

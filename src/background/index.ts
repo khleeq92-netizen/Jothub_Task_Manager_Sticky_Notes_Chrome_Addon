@@ -124,7 +124,7 @@ export function startBackground() {
     const settings = await loadSettings();
     const web = pageUrl && /^https?:/.test(pageUrl);
     await save(newNote({ text, html: textToHtml(text), color: settings.noteColor, ...(web ? { scope: 'page' as const, url: normalizeUrl(pageUrl), host: hostOf(pageUrl) } : {}) }));
-    await p.notifications.show(`saved:${Date.now()}`, 'Saved to Jot Hub', web ? 'The note is in My Notes.' : 'Notes cannot float on this page, so it is in My Notes.');
+    await p.notifications.show(`saved:${Date.now()}`, 'Saved to Taskmark', web ? 'The note is in My Notes.' : 'Notes cannot float on this page, so it is in My Notes.');
   }
 
   async function quickTaskOn(tabId: number | undefined, text: string, pageUrl?: string) {
