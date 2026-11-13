@@ -68,8 +68,15 @@ export interface Platform {
     /** Call once at page load so open() can run synchronously inside a click. */
     prepare(): void;
     open(): Promise<void>;
-    /** Opens the panel in a given window. Must run straight from a user action, e.g. a keyboard command. */
-    openIn(windowId: number): Promise<void>;
+    /**
+     * Opens the panel in a window, or closes it if it is already open there.
+     * Must run straight from a user action, e.g. a keyboard command.
+     */
+    toggleIn(windowId: number): Promise<'opened' | 'closed'>;
+    /** Called once by the background worker: keeps track of which windows have the panel open. */
+    watch(): void;
+    /** Called by the panel page so the background can ask it to close. */
+    listenForClose(): void;
   };
   alarms: {
     set(name: string, options: AlarmOptions): Promise<void>;

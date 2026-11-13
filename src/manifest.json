@@ -25,7 +25,7 @@
     "_execute_action": { "suggested_key": { "default": "Alt+Shift+J" }, "description": "Open Task-Mark-stickynote" },
     "new-note": { "suggested_key": { "default": "Alt+Shift+N" }, "description": "New sticky note on the current page" },
     "quick-task": { "suggested_key": { "default": "Alt+Shift+T" }, "description": "Quick task from the current page" },
-    "open-side-panel": { "suggested_key": { "default": "Alt+Shift+S" }, "description": "Open in the side panel" },
+    "open-side-panel": { "suggested_key": { "default": "Alt+Shift+S" }, "description": "Open or close the side panel" },
     "open-hub": { "description": "Open the full hub in a tab" }
   },
   "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }

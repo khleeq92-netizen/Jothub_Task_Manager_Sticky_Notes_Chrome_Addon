@@ -123,7 +123,7 @@ export function createWebPlatform(persist = typeof localStorage !== 'undefined')
       onRemoved: () => {},
     },
     sound: { play: async () => false, stop: async () => {} },
-    sidePanel: { supported: false, prepare() {}, async open() {}, async openIn() {} },
+    sidePanel: { supported: false, prepare() {}, async open() {}, toggleIn: async () => 'opened' as const, watch() {}, listenForClose() {} },
     alarms: {
       async set(name, options) {
         clearTimeout(timers.get(name));

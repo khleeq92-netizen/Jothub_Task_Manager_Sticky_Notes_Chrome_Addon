@@ -3,6 +3,39 @@ import type { Platform } from './types';
 // Firefox exposes the same promise-based API as `browser`.
 const api: typeof chrome = (globalThis as any).browser ?? (globalThis as any).chrome;
 
+// ---- side panel state (used by the open/close shortcut) ----
+const PANELS_KEY = 'jh-panel-windows';
+let panelWindows: Set<number> | null = null;
+
+async function loadPanels(): Promise<Set<number>> {
+  if (panelWindows) return panelWindows;
+  const items: Record<string, unknown> = (await api.storage.session?.get(PANELS_KEY).catch(() => ({}))) ?? {};
+  const stored = items[PANELS_KEY];
+  panelWindows ??= new Set(Array.isArray(stored) ? stored : []);
+  return panelWindows;
+}
+
+async function updatePanels(change: (set: Set<number>) => void) {
+  const set = await loadPanels();
+  change(set);
+  await api.storage.session?.set({ [PANELS_KEY]: [...set] }).catch(() => {});
+}
+
+/** Whether our panel is open in that window, as known right now (before any new open). */
+function panelOpenIn(windowId: number): Promise<boolean> {
+  const side = (api as any).sidePanel;
+  if (side?.onOpened && side?.onClosed) {
+    if (panelWindows) return Promise.resolve(panelWindows.has(windowId)); // snapshot, same tick
+    return loadPanels().then((set) => set.has(windowId));
+  }
+  // Older Chrome: no per-window events. Side panel contexts carry no window id,
+  // so this can only tell whether a panel is open somewhere.
+  return (api.runtime as any)
+    .getContexts({ contextTypes: ['SIDE_PANEL'] })
+    .then((contexts: chrome.runtime.ExtensionContext[]) => contexts.length > 0)
+    .catch(() => false);
+}
+
 export function createChromePlatform(): Platform {
   let panelWindowId: number | undefined;
 
@@ -127,8 +160,45 @@ export function createChromePlatform(): Platform {
         if (panelWindowId == null) throw new Error('No browser window to open the side panel in.');
         await (api as any).sidePanel.open({ windowId: panelWindowId });
       },
-      async openIn(windowId) {
-        await (api as any).sidePanel.open({ windowId });
+      watch() {
+        const side = (api as any).sidePanel;
+        if (!side?.onOpened || !side?.onClosed) return;
+        // Which windows have our panel open. Kept in memory and in session
+        // storage, so a restarted service worker still knows.
+        side.onOpened.addListener((info: { windowId: number }) => void updatePanels((set) => set.add(info.windowId)));
+        side.onClosed.addListener((info: { windowId: number }) => void updatePanels((set) => set.delete(info.windowId)));
+        api.windows.onRemoved.addListener((id) => void updatePanels((set) => set.delete(id)));
+      },
+      toggleIn(windowId) {
+        const side = (api as any).sidePanel;
+        // Read the current state *before* opening, in the same tick: Chrome only
+        // lets sidePanel.open() run right after the key press, so it cannot wait
+        // for the answer. Opening an already-open panel does nothing.
+        const wasOpen = panelOpenIn(windowId);
+        const opening: Promise<void> = side.open({ windowId });
+        return wasOpen.then(async (open) => {
+          if (!open) {
+            await opening; // report a failure to open
+            return 'opened' as const;
+          }
+          await opening.catch(() => {});
+          try {
+            await side.close({ windowId });
+          } catch {
+            // Older Chrome without sidePanel.close(): ask the panel page to close itself.
+            await api.runtime.sendMessage({ type: 'jh-close-panel', windowId }).catch(() => {});
+          }
+          return 'closed' as const;
+        });
+      },
+      listenForClose() {
+        api.runtime.onMessage.addListener((message) => {
+          if (message?.type !== 'jh-close-panel') return undefined;
+          void api.windows.getCurrent().then((w) => {
+            if (message.windowId == null || w.id === message.windowId) window.close();
+          });
+          return undefined;
+        });
       },
     },
     alarms: {

@@ -12,7 +12,7 @@ Works in Chrome on **Windows and macOS** (same package for both). Requires Chrom
 
 You can install from the ZIP or from the `dist/` folder — they contain the same build.
 
-1. Unzip `task-mark-stickynote-extension-v2.1.2.zip` to a folder you will keep (for example `Documents/Task-Mark-stickynote`).
+1. Unzip `task-mark-stickynote-extension-v2.1.3.zip` to a folder you will keep (for example `Documents/Task-Mark-stickynote`).
    Or skip this and use the `dist/` folder inside this project.
 2. Open `chrome://extensions` in Chrome.
 3. Turn on **Developer mode** (top right).
@@ -66,7 +66,7 @@ Eleven ready-made templates (Daily Planner, Weekly Planner, Monthly Goals, Meeti
 | Shortcut | Action |
 | --- | --- |
 | `Alt+Shift+J` | Open the toolbar popup |
-| `Alt+Shift+S` | Open in the side panel |
+| `Alt+Shift+S` | Open or close the side panel |
 | `Alt+Shift+N` | New sticky note on the current page |
 | `Alt+Shift+T` | Quick task from the current page |
 | *(not set)* | Open the full hub in a tab — assign any key you like |
@@ -177,7 +177,7 @@ The extension does not read page content or browsing history. The content script
 
 ## Test status
 
-- 44 unit tests pass.
-- 37 end-to-end checks pass against the built extension in Chrome 157 on macOS: service worker, commands, alarms, floating notes (create, type, format, drag, reload, per-page scoping), quick task, reminder scheduling, the reminder pop-up window, chime, snooze and test reminder, hub/popup/side-panel pages, live updates between hub and page.
+- 48 unit tests pass.
+- 41 end-to-end checks pass against the built extension (Chrome 157 on macOS, Chromium on Linux): service worker, commands, alarms, floating notes (create, type, format, drag, reload, per-page scoping), quick task, reminder scheduling, the reminder pop-up window, chime, snooze and test reminder, hub/popup/side-panel pages, side-panel open/close tracking, live shortcuts list, dialogs that scroll, live updates between hub and page.
 - Cloud sync is covered by tests against a simulated cloud and by request-format tests. **It has not been run against a live Firebase project**, because that needs your credentials. After setup, follow the checklist at the end of [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md).
 - Not run on Windows yet. Nothing in the extension is OS-specific, but it has only been executed on macOS.

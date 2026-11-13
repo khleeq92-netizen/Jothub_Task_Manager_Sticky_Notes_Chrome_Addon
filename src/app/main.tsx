@@ -17,6 +17,8 @@ document.head.append(style);
 // the background logic runs in the page.
 if (platform.name === 'web') startBackground();
 platform.sidePanel.prepare();
+// The side-panel shortcut closes the panel again by asking this page to close.
+if (root.dataset.surface === 'panel') platform.sidePanel.listenForClose();
 
 createRoot(document.getElementById('root')!).render(<App />);
 void initStore();

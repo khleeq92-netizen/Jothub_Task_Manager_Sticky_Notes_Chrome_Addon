@@ -207,6 +207,26 @@ try {
   await shadow(() => document.querySelector('jot-hub-notes').shadowRoot.querySelector('.toast button').click());
   check('Undo puts the note back on the page', (await until(async () => (await noteSel()) === 1)) === true);
 
+  // ---- side panel: the shortcut toggles it, which relies on knowing where it is open ----
+  const panelHost = await browser.newPage();
+  await panelHost.goto(`chrome-extension://${id}/app.html`);
+  await until(() => panelHost.evaluate(() => !!document.querySelector('button[aria-label="Keep open in the side panel"]')));
+  const hostWindow = await sw(async () => (await chrome.windows.getLastFocused({ windowTypes: ['normal'] })).id);
+  await panelHost.click('button[aria-label="Keep open in the side panel"]'); // a real click, so Chrome allows opening
+  const trackedOpen = await until(async () => {
+    const stored = (await sw(() => chrome.storage.session.get('jh-panel-windows')))['jh-panel-windows'] ?? [];
+    return stored.includes(hostWindow) ? stored : null;
+  });
+  check('opening the side panel is tracked for its window', !!trackedOpen);
+  await sw((w) => chrome.sidePanel.close({ windowId: w }), hostWindow);
+  const trackedClosed = await until(async () => {
+    const stored = (await sw(() => chrome.storage.session.get('jh-panel-windows')))['jh-panel-windows'] ?? [];
+    const panels = await sw(async () => (await chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] })).length);
+    return !stored.includes(hostWindow) && panels === 0;
+  });
+  check('closing the side panel is tracked too', !!trackedClosed);
+  await panelHost.close().catch(() => {});
+
   // ---- reminder alerts: pop-up window, sound, snooze, test button ----
   const pad = (n) => String(n).padStart(2, '0');
   const now = new Date();

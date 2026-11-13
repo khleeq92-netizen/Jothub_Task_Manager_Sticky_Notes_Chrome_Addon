@@ -18,6 +18,7 @@ const TRASH_DAYS = 30;
 export function startBackground() {
   const p = platform;
   let reminderTimer: ReturnType<typeof setTimeout> | undefined;
+  p.sidePanel.watch();
 
   async function setup() {
     await p.menus.setup([
@@ -170,9 +171,9 @@ export function startBackground() {
   });
 
   p.commands.onCommand((name, tabId, windowId) => {
-    // Opened right away, before any await, so Chrome still counts it as the user's key press.
+    // Toggled right away, before any await, so Chrome still counts it as the user's key press.
     if (name === 'open-side-panel') {
-      if (windowId != null) void p.sidePanel.openIn(windowId).catch(() => openApp());
+      if (windowId != null) void p.sidePanel.toggleIn(windowId).catch(() => openApp());
       else void openApp();
       return;
     }

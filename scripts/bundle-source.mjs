@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = path.join(root, 'handoff');
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-const top = ['package.json', 'tsconfig.json', 'vitest.config.ts', '.env.example', '.gitignore', 'firestore.rules', 'README.md', 'PRIVACY.md', 'HANDOFF.md'];
+const top = ['package.json', 'package-lock.json', 'tsconfig.json', 'vitest.config.ts', '.env.example', '.gitignore', 'firestore.rules', 'README.md', 'PRIVACY.md', 'HANDOFF.md'];
 const dirs = ['src', 'scripts', 'tests', 'docs', 'public'];
 const isText = (f) => /\.(ts|tsx|css|json|mjs|md|rules|example|gitignore)$/.test(f) || f.startsWith('.');
 
@@ -28,7 +28,7 @@ let text = `# Task-Mark-stickynote v${pkg.version} — complete source in one fi
 for (const file of files) {
   const data = fs.readFileSync(path.join(root, file));
   zip[file] = new Uint8Array(data);
-  if (!isText(path.basename(file)) || file === 'HANDOFF.md') continue;
+  if (!isText(path.basename(file)) || file === 'HANDOFF.md' || file === 'package-lock.json') continue;
   const fence = file.endsWith('.md') ? '````' : '```';
   text += `\n\n---\n\n## FILE: ${file}\n\n${fence}${path.extname(file).slice(1)}\n${data.toString('utf8').replace(/\s+$/, '')}\n${fence}\n`;
 }
