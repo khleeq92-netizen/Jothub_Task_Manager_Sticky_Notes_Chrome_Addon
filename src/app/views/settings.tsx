@@ -19,11 +19,8 @@ import { useSync } from './planner';
 
 declare const __APP_VERSION__: string;
 
+/** Shortcuts inside the hub. The browser-wide ones come live from Chrome (see BrowserShortcuts). */
 const SHORTCUTS: [string, string][] = [
-  ['Alt + Shift + J', 'Open Task-Mark-stickynote (toolbar popup)'],
-  ['Alt + Shift + N', 'New sticky note on the current page'],
-  ['Alt + Shift + T', 'Quick task from the current page'],
-  ['Alt + Shift + H', 'Open the full hub in a tab'],
   ['Ctrl / ⌘ + K', 'Search everything (inside the hub)'],
   ['Alt + N', 'New note (inside the hub)'],
   ['Alt + T', 'New task (inside the hub)'],
@@ -112,14 +109,11 @@ export function SettingsView({ section }: { section: string }) {
 
       <section className="panel" id="settings-shortcuts">
         <h2>Keyboard shortcuts</h2>
+        {platform.name === 'chrome' && <BrowserShortcuts />}
+        <h3 className="shortcuts-sub">Inside Task-Mark-stickynote</h3>
         <table className="shortcuts">
           <tbody>{SHORTCUTS.map(([keys, what]) => <tr key={keys}><td><kbd>{keys}</kbd></td><td>{what}</td></tr>)}</tbody>
         </table>
-        {platform.name === 'chrome' && (
-          <p className="muted small">
-            The first four work anywhere in the browser (on a Mac, Alt is the Option key). <button className="link" onClick={() => void platform.tabs.open('chrome://extensions/shortcuts')}>Change them in Chrome</button>
-          </p>
-        )}
       </section>
 
       <section className="panel" id="settings-about">
@@ -414,6 +408,49 @@ function AlertPrefsRows({ disabled }: { disabled: boolean }) {
       <div className="setting">
         <div><strong>Test reminder</strong><p className="muted small">Check that you can see and hear reminders on this computer.</p></div>
         <button type="button" className="btn" disabled={disabled} onClick={() => void test()}>Send test reminder</button>
+      </div>
+    </>
+  );
+}
+
+/** Pretty keys: Chrome gives "⌥⇧S" on a Mac and "Alt+Shift+S" elsewhere. */
+const showKeys = (shortcut: string) => (/^[⌘⌥⇧⌃]/.test(shortcut) ? shortcut : shortcut.split('+').join(' + '));
+
+/**
+ * Browser-wide shortcuts, read live from Chrome so they always match what the
+ * user has set. Chrome only lets people change them on its own shortcuts page.
+ */
+function BrowserShortcuts() {
+  const [list, setList] = useState<{ name: string; description: string; shortcut: string }[]>([]);
+  useEffect(() => {
+    const order = ['_execute_action', 'open-side-panel', 'open-hub', 'new-note', 'quick-task'];
+    const rank = (name: string) => (order.includes(name) ? order.indexOf(name) : order.length);
+    const load = () => void platform.commands.list().then((all) => setList([...all].sort((x, y) => rank(x.name) - rank(y.name)))).catch(() => {});
+    load();
+    // Coming back from Chrome's shortcuts page: show the new keys straight away.
+    const onVisible = () => document.visibilityState === 'visible' && load();
+    window.addEventListener('focus', load);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('focus', load);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, []);
+  return (
+    <>
+      <table className="shortcuts" aria-label="Browser-wide shortcuts">
+        <tbody>
+          {list.map((c) => (
+            <tr key={c.name}>
+              <td>{c.shortcut ? <kbd>{showKeys(c.shortcut)}</kbd> : <span className="muted">Not set</span>}</td>
+              <td>{c.description}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="shortcut-change">
+        <p className="muted small">These work on any page. Choose your own keys, or add one where it says “Not set”, on Chrome’s shortcuts page. On a Mac, Alt is the Option key.</p>
+        <button type="button" className="btn" onClick={() => void platform.tabs.open('chrome://extensions/shortcuts')}>Change shortcuts</button>
       </div>
     </>
   );

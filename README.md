@@ -12,7 +12,7 @@ Works in Chrome on **Windows and macOS** (same package for both). Requires Chrom
 
 You can install from the ZIP or from the `dist/` folder — they contain the same build.
 
-1. Unzip `task-mark-stickynote-extension-v2.1.1.zip` to a folder you will keep (for example `Documents/Task-Mark-stickynote`).
+1. Unzip `task-mark-stickynote-extension-v2.1.2.zip` to a folder you will keep (for example `Documents/Task-Mark-stickynote`).
    Or skip this and use the `dist/` folder inside this project.
 2. Open `chrome://extensions` in Chrome.
 3. Turn on **Developer mode** (top right).
@@ -65,15 +65,16 @@ Eleven ready-made templates (Daily Planner, Weekly Planner, Monthly Goals, Meeti
 
 | Shortcut | Action |
 | --- | --- |
-| `Alt+Shift+J` | Open Task-Mark-stickynote |
+| `Alt+Shift+J` | Open the toolbar popup |
+| `Alt+Shift+S` | Open in the side panel |
 | `Alt+Shift+N` | New sticky note on the current page |
 | `Alt+Shift+T` | Quick task from the current page |
-| `Alt+Shift+H` | Open the full hub in a tab |
+| *(not set)* | Open the full hub in a tab — assign any key you like |
 | `Ctrl/⌘+K` | Search everything (inside the hub) |
 | `Alt+N` / `Alt+T` | New note / new task (inside the hub) |
 | `Esc` | Close a dialog, leave focus mode |
 
-On a Mac, Alt is the Option key. Change the first four at `chrome://extensions/shortcuts`. If another extension already uses one of them, Chrome leaves it unset — assign it there.
+On a Mac, Alt is the Option key. The first five work on any page; change them, or add one, at `chrome://extensions/shortcuts` (Settings → Keyboard shortcuts → **Change shortcuts** opens it). Settings always shows the keys currently set. Chrome allows at most four default keys per extension, which is why the full hub starts without one. If another extension already uses a key, Chrome leaves it unset — assign it there.
 
 ### Coming from the earlier "Jot" extension
 

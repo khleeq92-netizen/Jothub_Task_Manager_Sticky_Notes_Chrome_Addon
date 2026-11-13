@@ -169,7 +169,13 @@ export function startBackground() {
     else void newNoteOn(click.tabId, click.id === 'jh-note-selection' ? (click.selectionText ?? '') : '', click.pageUrl);
   });
 
-  p.commands.onCommand((name, tabId) => {
+  p.commands.onCommand((name, tabId, windowId) => {
+    // Opened right away, before any await, so Chrome still counts it as the user's key press.
+    if (name === 'open-side-panel') {
+      if (windowId != null) void p.sidePanel.openIn(windowId).catch(() => openApp());
+      else void openApp();
+      return;
+    }
     if (name === 'new-note') void newNoteOn(tabId, '');
     else if (name === 'quick-task') void quickTaskOn(tabId, '');
     else if (name === 'open-hub') void openApp();

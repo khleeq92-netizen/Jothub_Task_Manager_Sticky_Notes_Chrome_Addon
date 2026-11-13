@@ -68,6 +68,8 @@ export interface Platform {
     /** Call once at page load so open() can run synchronously inside a click. */
     prepare(): void;
     open(): Promise<void>;
+    /** Opens the panel in a given window. Must run straight from a user action, e.g. a keyboard command. */
+    openIn(windowId: number): Promise<void>;
   };
   alarms: {
     set(name: string, options: AlarmOptions): Promise<void>;
@@ -87,6 +89,8 @@ export interface Platform {
     onClick(cb: (click: MenuClick) => void): void;
   };
   commands: {
-    onCommand(cb: (name: string, tabId?: number) => void): void;
+    onCommand(cb: (name: string, tabId?: number, windowId?: number) => void): void;
+    /** The browser-wide shortcuts as the user has set them (an empty shortcut means none is set). */
+    list(): Promise<{ name: string; description: string; shortcut: string }[]>;
   };
 }

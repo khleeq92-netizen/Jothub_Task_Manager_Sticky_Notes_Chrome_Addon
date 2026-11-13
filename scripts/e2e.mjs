@@ -62,7 +62,7 @@ try {
 
   check('service worker starts', true);
   const commands = await sw(() => chrome.commands.getAll());
-  check('four keyboard commands registered', commands.length === 4, commands.map((c) => `${c.name}=${c.shortcut || 'unset'}`).join(', '));
+  check('five keyboard commands registered, including the side panel', commands.length === 5 && commands.some((c) => c.name === 'open-side-panel'), commands.map((c) => `${c.name}=${c.shortcut || 'unset'}`).join(', '));
   const alarms = await until(async () => {
     const all = await sw(() => chrome.alarms.getAll());
     return all.some((a) => a.name === 'sync') && all.some((a) => a.name === 'maintenance') ? all : null;

@@ -123,7 +123,7 @@ export function createWebPlatform(persist = typeof localStorage !== 'undefined')
       onRemoved: () => {},
     },
     sound: { play: async () => false, stop: async () => {} },
-    sidePanel: { supported: false, prepare() {}, async open() {} },
+    sidePanel: { supported: false, prepare() {}, async open() {}, async openIn() {} },
     alarms: {
       async set(name, options) {
         clearTimeout(timers.get(name));
@@ -155,6 +155,6 @@ export function createWebPlatform(persist = typeof localStorage !== 'undefined')
       },
     },
     menus: { async setup() {}, onClick: () => {} },
-    commands: { onCommand: () => {} },
+    commands: { onCommand: () => {}, list: async () => [] },
   };
 }

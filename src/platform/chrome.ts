@@ -127,6 +127,9 @@ export function createChromePlatform(): Platform {
         if (panelWindowId == null) throw new Error('No browser window to open the side panel in.');
         await (api as any).sidePanel.open({ windowId: panelWindowId });
       },
+      async openIn(windowId) {
+        await (api as any).sidePanel.open({ windowId });
+      },
     },
     alarms: {
       async set(name, options) {
@@ -173,7 +176,11 @@ export function createChromePlatform(): Platform {
         ),
     },
     commands: {
-      onCommand: (cb) => api.commands?.onCommand.addListener((name, tab) => cb(name, tab?.id)),
+      onCommand: (cb) => api.commands?.onCommand.addListener((name, tab) => cb(name, tab?.id, tab?.windowId)),
+      async list() {
+        const all = (await api.commands?.getAll()) ?? [];
+        return all.map((c) => ({ name: c.name ?? '', description: c.name === '_execute_action' ? 'Open the toolbar popup' : (c.description ?? ''), shortcut: c.shortcut ?? '' }));
+      },
     },
   };
 }
