@@ -110,6 +110,7 @@ export function createWebPlatform(persist = typeof localStorage !== 'undefined')
       send: async () => null,
       sendToActive: async () => null,
       activeTabId: async () => undefined,
+      injectAll: async () => 0,
     },
     windows: {
       async popout(url, width, height) {

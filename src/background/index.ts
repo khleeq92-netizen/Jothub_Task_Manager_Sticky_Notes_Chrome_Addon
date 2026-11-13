@@ -135,7 +135,12 @@ export function startBackground() {
     await openApp(`#/tasks/${task.id}`);
   }
 
-  p.runtime.onInstalled(() => void setup());
+  p.runtime.onInstalled(() => {
+    void setup();
+    // Tabs that were open before this install or update have no content script yet:
+    // add it now, so floating notes and the shortcuts work without reloading pages.
+    void p.tabs.injectAll();
+  });
   p.runtime.onStartup(() => void setup());
 
   p.storage.onChanged((changes) => {

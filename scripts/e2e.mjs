@@ -51,6 +51,9 @@ const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'task-mark-stickynote-e2e-
 const browser = await puppeteer.launch({ executablePath, headless: true, pipe: true, enableExtensions: true, userDataDir: profile, args: [...(process.getuid?.() === 0 ? ['--no-sandbox'] : []), '--no-first-run', '--no-default-browser-check'] });
 
 try {
+  // A tab that is already open when the extension is installed or updated.
+  const earlyPage = await browser.newPage();
+  await earlyPage.goto(`${base}/opened-before-install`);
   const id = await browser.installExtension(dist);
   check('extension installs', !!id, id);
 
@@ -68,6 +71,13 @@ try {
     return all.some((a) => a.name === 'sync') && all.some((a) => a.name === 'maintenance') ? all : null;
   });
   check('sync and maintenance alarms scheduled', !!alarms);
+
+  // ---- a tab opened before the install gets the content script without a reload ----
+  await earlyPage.bringToFront();
+  const earlyTab = await sw(async () => (await chrome.tabs.query({ active: true, lastFocusedWindow: true }))[0]?.id);
+  const earlyAnswers = await until(() => sw((tabId) => chrome.tabs.sendMessage(tabId, { type: 'jh-ping' }).catch(() => null), earlyTab));
+  check('a tab opened before the install works without reloading it', !!earlyAnswers);
+  await earlyPage.close();
 
   // ---- floating note on a web page ----
   const page = await browser.newPage();

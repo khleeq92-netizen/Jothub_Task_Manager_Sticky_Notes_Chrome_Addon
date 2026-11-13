@@ -396,6 +396,10 @@ function quickTask(text: string) {
   title.focus();
 }
 
+// A copy of this script left over from before the extension was updated can no
+// longer save anything; remove its notes so they are not shown twice.
+for (const stale of document.querySelectorAll('jot-hub-notes')) stale.remove();
+
 platform.runtime.onMessage((message) => {
   switch (message?.type) {
     case 'jh-new-note':

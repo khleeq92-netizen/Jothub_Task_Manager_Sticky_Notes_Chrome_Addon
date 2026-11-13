@@ -12,7 +12,7 @@ Works in Chrome on **Windows and macOS** (same package for both). Requires Chrom
 
 You can install from the ZIP or from the `dist/` folder — they contain the same build.
 
-1. Unzip `task-mark-stickynote-extension-v2.1.4.zip` to a folder you will keep (for example `Documents/Task-Mark-stickynote`).
+1. Unzip `task-mark-stickynote-extension-v2.1.5.zip` to a folder you will keep (for example `Documents/Task-Mark-stickynote`).
    Or skip this and use the `dist/` folder inside this project.
 2. Open `chrome://extensions` in Chrome.
 3. Turn on **Developer mode** (top right).
@@ -165,6 +165,7 @@ firestore.rules  Security rules to publish in Firebase.
 | `storage`, `unlimitedStorage` | Keep notes, tasks and backups on the device |
 | Content script on `http(s)` pages | Show floating notes and the quick-task form |
 | `alarms`, `notifications` | Task reminders, scheduled sync and backups |
+| `scripting`, access to http/https pages | Floating notes on web pages. After an install or update, the note script is added to tabs that are already open, so the shortcuts work without reloading them. |
 | `offscreen` | Plays the reminder chime (the service worker cannot play audio) |
 | `contextMenus` | Right-click actions |
 | `sidePanel` | Keep the hub open beside pages |

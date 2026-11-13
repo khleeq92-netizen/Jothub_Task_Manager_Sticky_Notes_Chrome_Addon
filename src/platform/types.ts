@@ -49,6 +49,8 @@ export interface Platform {
     /** Sends to the active tab of the most recently used normal window. Null when nothing answers. */
     sendToActive(message: unknown): Promise<unknown | null>;
     activeTabId(): Promise<number | undefined>;
+    /** Adds the content script to every open web page (after an install or update, open tabs have none). */
+    injectAll(): Promise<number>;
   };
   windows: {
     popout(url: string, width: number, height: number): Promise<void>;

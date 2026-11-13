@@ -44,12 +44,29 @@ export function createChromePlatform(): Platform {
     return tabs.sort((a, b) => ((b as any).lastAccessed ?? 0) - ((a as any).lastAccessed ?? 0))[0];
   };
 
-  const send = async (tabId: number, message: unknown) => {
+  const sendOnce = async (tabId: number, message: unknown) => {
     try {
       return (await api.tabs.sendMessage(tabId, message)) ?? null;
     } catch {
-      return null; // no content script on that page (chrome://, the Web Store, …)
+      return null; // nothing listening on that page
     }
+  };
+
+  /**
+   * Sends to the page's content script. Tabs that were already open when the
+   * extension was installed, updated or reloaded have no live content script
+   * until they are refreshed, so add it now and try again. Browser pages
+   * (chrome://, the Web Store, PDFs) still refuse.
+   */
+  const send = async (tabId: number, message: unknown) => {
+    const first = await sendOnce(tabId, message);
+    if (first != null) return first;
+    try {
+      await api.scripting.executeScript({ target: { tabId }, files: ['content.js'] });
+    } catch {
+      return null;
+    }
+    return sendOnce(tabId, message);
   };
 
   return {
@@ -95,6 +112,21 @@ export function createChromePlatform(): Platform {
       async sendToActive(message) {
         const tab = await normalTab();
         return tab?.id != null ? send(tab.id, message) : null;
+      },
+      async injectAll() {
+        const tabs = await api.tabs.query({ url: ['http://*/*', 'https://*/*'] });
+        let added = 0;
+        for (const tab of tabs) {
+          if (tab.id == null || tab.discarded) continue;
+          if ((await sendOnce(tab.id, { type: 'jh-ping' })) != null) continue; // already has a live one
+          try {
+            await api.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] });
+            added++;
+          } catch {
+            // a page that refuses scripts (Web Store, error pages)
+          }
+        }
+        return added;
       },
       async activeTabId() {
         return (await normalTab())?.id;
