@@ -127,6 +127,7 @@ npm run e2e
 | `npm run build` | Production build into `dist/` |
 | `npm run watch` | Rebuild on change (reload the extension in Chrome to pick it up) |
 | `npm run package` | Build and create `task-mark-stickynote-extension-v<version>.zip` |
+| `npm run store-assets` | Regenerate the Chrome Web Store screenshots and promo images in `store/` |
 | `npm run typecheck` | TypeScript check |
 | `npm test` | Unit tests (notes, tasks, backup/restore, sync) |
 | `npm run e2e` | Loads the built extension into your installed Chrome with a throwaway profile and tests it end to end |

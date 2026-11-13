@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "check": "npm run typecheck && npm test && npm run package && node scripts/e2e.mjs",
-    "e2e": "npm run build && node scripts/e2e.mjs"
+    "e2e": "npm run build && node scripts/e2e.mjs",
+    "store-assets": "npm run build && node scripts/store-assets.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
