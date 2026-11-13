@@ -1,8 +1,9 @@
 import { Cloud, Copy, Download, KeyRound, LogOut, RefreshCw, RotateCcw, Save, Trash2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { ALERT_PREFS, DEFAULT_ALERT_PREFS, type AlertPrefs } from '../../core/alerts';
 import { buildBackup, deleteSnapshot, parseBackup, readSnapshot, restoreBackup, type SnapshotMeta } from '../../core/backup';
 import { timeAgo } from '../../core/dates';
-import { loadAll } from '../../core/db';
+import { loadAll, setLocal } from '../../core/db';
 import { currentPlan } from '../../core/entitlements';
 import { downloadFile } from '../../core/exporters';
 import { REMINDER_OPTIONS } from '../../core/tasks';
@@ -87,9 +88,10 @@ export function SettingsView({ section }: { section: string }) {
       <section className="panel" id="settings-tasks">
         <h2>Tasks and reminders</h2>
         <div className="setting">
-          <div><strong>Desktop notifications</strong><p className="muted small">Show a notification when a task reminder is due.</p></div>
-          <label className="switch"><input type="checkbox" checked={settings.notifications} onChange={(e) => set({ notifications: e.target.checked })} /><span aria-hidden="true" /><span className="sr-only">Desktop notifications</span></label>
+          <div><strong>Task reminders</strong><p className="muted small">Alert me when a task's reminder time arrives. Applies to all your devices.</p></div>
+          <label className="switch"><input type="checkbox" checked={settings.notifications} onChange={(e) => set({ notifications: e.target.checked })} /><span aria-hidden="true" /><span className="sr-only">Task reminders</span></label>
         </div>
+        <AlertPrefsRows disabled={!settings.notifications} />
         <div className="setting">
           <div><strong>Default reminder</strong><p className="muted small">Used when you give a task a deadline.</p></div>
           <select aria-label="Default reminder" value={settings.defaultReminder == null ? '' : String(settings.defaultReminder)} onChange={(e) => set({ defaultReminder: e.target.value === '' ? null : Number(e.target.value) })}>
@@ -383,5 +385,36 @@ function BackupSection() {
         </Modal>
       )}
     </section>
+  );
+}
+
+/** Pop-up and sound are per browser profile, so a profile can stay quiet. */
+function AlertPrefsRows({ disabled }: { disabled: boolean }) {
+  const saved = useLocal<Partial<AlertPrefs>>(ALERT_PREFS, {});
+  const prefs = { ...DEFAULT_ALERT_PREFS, ...saved };
+  const change = (patch: Partial<AlertPrefs>) => void setLocal(ALERT_PREFS, { ...prefs, ...patch });
+  const test = async () => {
+    try {
+      await platform.runtime.send({ type: 'test-reminder' });
+      toast('Test reminder sent');
+    } catch {
+      toast('Could not send the test reminder.');
+    }
+  };
+  return (
+    <>
+      <div className="setting">
+        <div><strong>Pop-up window</strong><p className="muted small">Open a reminder window in front of whatever you are doing. This browser profile only.</p></div>
+        <label className="switch"><input type="checkbox" disabled={disabled} checked={prefs.popup} onChange={(e) => change({ popup: e.target.checked })} /><span aria-hidden="true" /><span className="sr-only">Pop-up window</span></label>
+      </div>
+      <div className="setting">
+        <div><strong>Alert sound</strong><p className="muted small">Play a chime until you respond (up to 30 seconds). This browser profile only.</p></div>
+        <label className="switch"><input type="checkbox" disabled={disabled} checked={prefs.sound} onChange={(e) => change({ sound: e.target.checked })} /><span aria-hidden="true" /><span className="sr-only">Alert sound</span></label>
+      </div>
+      <div className="setting">
+        <div><strong>Test reminder</strong><p className="muted small">Check that you can see and hear reminders on this computer.</p></div>
+        <button type="button" className="btn" disabled={disabled} onClick={() => void test()}>Send test reminder</button>
+      </div>
+    </>
   );
 }

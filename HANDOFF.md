@@ -11,15 +11,18 @@ The owner wants complete, working features with few questions — no roadmaps, p
 ## Current state (14 Nov 2026)
 
 Working and tested:
-- 44 unit tests pass (`npm test`).
-- 30 end-to-end checks pass against the built extension in Chrome 157 on macOS (`npm run e2e`).
+- 47 unit tests pass (`npm test`).
+- 37 end-to-end checks pass against the built extension (`npm run e2e`), on macOS (Chrome 157) and Linux (Chromium). As root, e2e adds `--no-sandbox` automatically.
 
 Not yet verified:
 - **Cloud sync against a live Firebase project.** No Firebase project exists yet. Sync is tested only against a simulated cloud plus request-format tests. Google sign-in is untested.
 - **Windows.** Nothing is OS-specific, but it has only been run on macOS.
-- Notification pop-ups, printing, right-click menu items and the side-panel button have not been exercised by automation.
+- Whether the reminder window comes to the front when another app (not Chrome) is active; this depends on the OS. Printing, right-click menu items and the side-panel button have not been exercised by automation.
 
-Last change made: floating notes got a ✕ button (removes the note from the page, keeps it in the hub, with Undo), and the note's ⋯ menu is no longer clipped by the note.
+Recent changes:
+- Reminder alerts: when a reminder is due, `alert.html` opens in its own pop-up window in front of the user's work, a chime plays from an offscreen document (`src/platform/offscreen.ts`) until any click or about 30 s, and a system notification is shown too. Buttons: Mark done, Open task, Dismiss, Snooze 5/15/60 min. Pop-up and sound are per browser profile (`local:alertPrefs`); the synced `notifications` setting is the master switch. Snoozes are device-local (`local:snoozes`). Logic in `src/core/alerts.ts` and `src/background/index.ts`.
+- Dialogs and the task editor scroll instead of overflowing short windows.
+- Floating notes got a ✕ button (removes the note from the page, keeps it in the hub, with Undo).
 
 ## Build and run
 
@@ -43,6 +46,7 @@ Build tool is esbuild (`scripts/build.mjs`), producing three bundles: `app.js` (
 | `src/core/` (rest) | notes (URL matching), tasks (status, recurrence, reminders), dates, templates (11 built-in), richtext (execCommand editor core), sanitize (HTML allowlist), exporters, backup, entitlements. |
 | `src/sync/` | Firebase Auth and Firestore over **REST** (`auth.ts`, `firestore.ts`), sync engine (`engine.ts`), config (`config.ts`). |
 | `src/background/index.ts` | Reminders, sync scheduling, auto-backup, trash expiry, context menus, commands. |
+| `src/alert/` | Reminder pop-up window (`alert.html`, plain DOM). |
 | `src/content/index.ts` | Floating notes and quick-task form: plain DOM in a shadow root, no React. |
 | `src/app/` | React hub: `App.tsx` (shell, search), `store.ts`, `ui.tsx`, `components.tsx` (editor, note/task editors), `views/library.tsx` (notes, folders, favorites, trash, templates), `views/planner.tsx` (tasks, calendar, dashboard), `views/settings.tsx`. |
 | `tests/` | Unit tests. `scripts/e2e.mjs` drives real Chrome with puppeteer-core. |
@@ -64,7 +68,7 @@ Build tool is esbuild (`scripts/build.mjs`), producing three bundles: `app.js` (
 
 1. Create a Firebase project and run the six-step checklist at the end of `docs/FIREBASE_SETUP.md`.
 2. Install on Windows and report differences.
-3. Manually check: right-click menu, side panel, floating window, reminder notification, print, shortcuts.
+3. Manually check: right-click menu, side panel, floating window, reminder pop-up and sound with another app in front, print, shortcuts.
 4. Possible later work: pricing page and paid plans, Firefox/Safari builds, Chrome Web Store listing (needs a contact line in `PRIVACY.md`).
 
 ## Note for a chat without file access

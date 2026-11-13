@@ -52,6 +52,16 @@ export interface Platform {
   };
   windows: {
     popout(url: string, width: number, height: number): Promise<void>;
+    /** Opens a small always-on-top-style window in front of everything and returns its id. */
+    alert(url: string, width: number, height: number): Promise<number | undefined>;
+    /** Brings an existing window to the front. False when it no longer exists. */
+    raise(id: number): Promise<boolean>;
+    onRemoved(cb: (id: number) => void): void;
+  };
+  sound: {
+    /** Plays the reminder chime, repeating until stop() or about 30 seconds. */
+    play(): Promise<boolean>;
+    stop(): Promise<void>;
   };
   sidePanel: {
     supported: boolean;

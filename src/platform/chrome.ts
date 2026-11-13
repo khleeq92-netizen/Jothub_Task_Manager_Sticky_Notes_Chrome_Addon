@@ -71,6 +71,49 @@ export function createChromePlatform(): Platform {
       async popout(url, width, height) {
         await api.windows.create({ url, type: 'popup', width, height });
       },
+      async alert(url, width, height) {
+        // Centre it over the window the user was last working in.
+        const base = await api.windows.getLastFocused({ windowTypes: ['normal'] }).catch(() => null);
+        const position =
+          base?.left != null && base.top != null && base.width && base.height
+            ? { left: Math.round(base.left + (base.width - width) / 2), top: Math.round(base.top + Math.max(40, (base.height - height) / 3)) }
+            : {};
+        const win = await api.windows.create({ url, type: 'popup', width, height, focused: true, ...position });
+        if (win?.id != null) await api.windows.update(win.id, { focused: true, drawAttention: true }).catch(() => {});
+        return win?.id;
+      },
+      async raise(id) {
+        try {
+          await api.windows.update(id, { focused: true, drawAttention: true });
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      onRemoved: (cb) => api.windows.onRemoved.addListener((id) => cb(id)),
+    },
+    sound: {
+      async play() {
+        const off = (api as any).offscreen;
+        if (!off) return false;
+        try {
+          await off.createDocument({ url: 'offscreen.html', reasons: ['AUDIO_PLAYBACK'], justification: 'Plays the task reminder sound.' });
+        } catch {
+          // Already open: fine.
+        }
+        try {
+          return !!(await api.runtime.sendMessage({ target: 'jh-offscreen', action: 'play' }));
+        } catch {
+          return false;
+        }
+      },
+      async stop() {
+        try {
+          await (api as any).offscreen?.closeDocument();
+        } catch {
+          // Nothing playing.
+        }
+      },
     },
     sidePanel: {
       supported: !!(api as any).sidePanel?.open,
@@ -102,6 +145,7 @@ export function createChromePlatform(): Platform {
           title,
           message,
           priority: 2,
+          requireInteraction: true,
         });
       },
       onClick: (cb) =>

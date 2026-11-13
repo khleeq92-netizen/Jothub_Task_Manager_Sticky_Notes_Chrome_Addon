@@ -1,3 +1,4 @@
+import { ALERT_PREFS, ALERT_WINDOW, ALERTS, DEFAULT_ALERT_PREFS, mergeAlerts, SNOOZES, TEST_ALERT_ID, type AlertItem, type AlertPrefs } from '../core/alerts';
 import { autoBackupDue } from '../core/backup';
 import { friendlyDate, friendlyTime } from '../core/dates';
 import { getLocal, loadAll, putRaw, rebuildStickyIndex, save, setLocal } from '../core/db';
@@ -30,27 +31,62 @@ export function startBackground() {
     await checkReminders();
   }
 
-  /** Sends due reminders and sets one alarm for the next upcoming one. */
+  /** Sends due reminders (and finished snoozes) and sets one alarm for the next upcoming one. */
   async function checkReminders() {
     const now = Date.now();
-    const [records, reminded, settings] = await Promise.all([loadAll(), getLocal<Record<string, number>>('reminded', {}), loadSettings()]);
+    const [records, reminded, snoozes, settings] = await Promise.all([
+      loadAll(),
+      getLocal<Record<string, number>>('reminded', {}),
+      getLocal<Record<string, number>>(SNOOZES, {}),
+      loadSettings(),
+    ]);
+    const tasks = new Map(records.filter((r): r is Task => r.type === 'task' && !r.purged).map((t) => [t.id, t]));
+    const due: Task[] = [];
     let next = Infinity;
     let changed = false;
-    for (const record of records) {
-      if (record.type !== 'task' || record.purged) continue;
-      const when = reminderAt(record);
-      if (when == null || reminded[record.id] === when) continue;
+    for (const task of tasks.values()) {
+      const when = reminderAt(task);
+      if (when == null || reminded[task.id] === when) continue;
       if (when > now) {
         next = Math.min(next, when);
         continue;
       }
-      reminded[record.id] = when;
+      reminded[task.id] = when;
       changed = true;
-      if (settings.notifications && now - when < DAY) await notify(record);
+      if (now - when < DAY) due.push(task);
+    }
+    let snoozesChanged = false;
+    for (const [id, when] of Object.entries(snoozes)) {
+      const task = tasks.get(id);
+      if (!task || task.status === 'completed' || task.deletedAt) {
+        delete snoozes[id];
+        snoozesChanged = true;
+      } else if (when <= now) {
+        delete snoozes[id];
+        snoozesChanged = true;
+        if (!due.includes(task)) due.push(task);
+      } else next = Math.min(next, when);
     }
     if (changed) await setLocal('reminded', reminded);
+    if (snoozesChanged) await setLocal(SNOOZES, snoozes);
     if (next < Infinity) await p.alarms.set('reminder', { when: next });
     else await p.alarms.clear('reminder');
+    if (due.length && settings.notifications) await raiseAlerts(due.map((t) => ({ taskId: t.id, at: now })), due);
+  }
+
+  /** The pop-up window in front of everything, the chime, and a system notification as a backup. */
+  async function raiseAlerts(items: AlertItem[], tasks: Task[]) {
+    const prefs = { ...DEFAULT_ALERT_PREFS, ...(await getLocal<Partial<AlertPrefs>>(ALERT_PREFS, {})) };
+    await setLocal(ALERTS, mergeAlerts(await getLocal<AlertItem[]>(ALERTS, []), items));
+    if (prefs.popup) {
+      const open = await getLocal<number | null>(ALERT_WINDOW, null);
+      if (open == null || !(await p.windows.raise(open))) {
+        const id = await p.windows.alert(p.runtime.url('alert.html'), 440, 420);
+        await setLocal(ALERT_WINDOW, id ?? null);
+      }
+    }
+    if (prefs.sound) await p.sound.play();
+    for (const task of tasks) await notify(task);
   }
 
   const notify = (task: Task) =>
@@ -59,6 +95,13 @@ export function startBackground() {
       task.reminder === 0 ? 'Task due now' : 'Task reminder',
       `${task.title || 'Untitled task'} — due ${friendlyDate(task.due)}${task.dueTime ? ` at ${friendlyTime(task.dueTime)}` : ''}`,
     );
+
+  async function snooze(taskId: string, minutes: number) {
+    const snoozes = await getLocal<Record<string, number>>(SNOOZES, {});
+    snoozes[taskId] = Date.now() + minutes * 60000;
+    await setLocal(SNOOZES, snoozes);
+    await checkReminders();
+  }
 
   async function maintenance() {
     const now = Date.now();
@@ -107,6 +150,15 @@ export function startBackground() {
     else if (name === 'maintenance') void maintenance();
   });
 
+  p.windows.onRemoved((id) => {
+    void getLocal<number | null>(ALERT_WINDOW, null).then(async (open) => {
+      if (open !== id) return;
+      await setLocal(ALERT_WINDOW, null);
+      await setLocal(ALERTS, []);
+      await p.sound.stop();
+    });
+  });
+
   p.notifications.onClick((id) => {
     if (id.startsWith('task:')) void openApp(`#/tasks/${id.slice(5)}`);
     else void openApp('#/notes');
@@ -133,6 +185,12 @@ export function startBackground() {
         return openApp(typeof message.hash === 'string' ? message.hash : '').then(() => true);
       case 'check-reminders':
         return checkReminders().then(() => true);
+      case 'snooze':
+        return snooze(String(message.taskId), Number(message.minutes) || 5).then(() => true);
+      case 'stop-sound':
+        return p.sound.stop().then(() => true);
+      case 'test-reminder':
+        return raiseAlerts([{ taskId: TEST_ALERT_ID, at: Date.now(), test: true }], []).then(() => true);
     }
     return undefined;
   });

@@ -115,7 +115,14 @@ export function createWebPlatform(persist = typeof localStorage !== 'undefined')
       async popout(url, width, height) {
         if (typeof window !== 'undefined') window.open(url, '_blank', `popup,width=${width},height=${height}`);
       },
+      async alert(url, width, height) {
+        if (typeof window !== 'undefined') window.open(url, '_blank', `popup,width=${width},height=${height}`);
+        return undefined;
+      },
+      raise: async () => false,
+      onRemoved: () => {},
     },
+    sound: { play: async () => false, stop: async () => {} },
     sidePanel: { supported: false, prepare() {}, async open() {} },
     alarms: {
       async set(name, options) {

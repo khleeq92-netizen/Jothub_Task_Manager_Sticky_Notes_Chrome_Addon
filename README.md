@@ -45,7 +45,7 @@ The steps are identical on Windows and Mac. To update later, replace the folder'
 
 - Title, description, start date, deadline, due time, priority (low → urgent), category, tags.
 - Status: pending, in progress, completed — plus **overdue**, worked out automatically.
-- Subtasks, linked notes, repeating tasks (daily, weekdays, weekly, monthly, yearly) and reminders with desktop notifications.
+- Subtasks, linked notes, repeating tasks (daily, weekdays, weekly, monthly, yearly) and reminders. When a reminder is due, a pop-up window opens in front of whatever you are doing, with a chime that repeats until you respond (up to 30 s) and buttons to mark the task done, open it, dismiss it, or snooze it for 5 min, 15 min or 1 hour. A system notification is shown as well. Pop-up and sound can be switched off per browser profile in Settings → Tasks and reminders, which also has a **Send test reminder** button.
 - Views: All, Day, Week, Month, Completed, and a month **Calendar**.
 - Quick task from any web page (right-click or `Alt+Shift+T`).
 
@@ -164,6 +164,7 @@ firestore.rules  Security rules to publish in Firebase.
 | `storage`, `unlimitedStorage` | Keep notes, tasks and backups on the device |
 | Content script on `http(s)` pages | Show floating notes and the quick-task form |
 | `alarms`, `notifications` | Task reminders, scheduled sync and backups |
+| `offscreen` | Plays the reminder chime (the service worker cannot play audio) |
 | `contextMenus` | Right-click actions |
 | `sidePanel` | Keep the hub open beside pages |
 | `identity` | Google sign-in window (only when you use it) |
@@ -176,6 +177,6 @@ The extension does not read page content or browsing history. The content script
 ## Test status
 
 - 44 unit tests pass.
-- 26 end-to-end checks pass against the built extension in Chrome 157 on macOS: service worker, commands, alarms, floating notes (create, type, format, drag, reload, per-page scoping), quick task, reminder scheduling, hub/popup/side-panel pages, live updates between hub and page.
+- 37 end-to-end checks pass against the built extension in Chrome 157 on macOS: service worker, commands, alarms, floating notes (create, type, format, drag, reload, per-page scoping), quick task, reminder scheduling, the reminder pop-up window, chime, snooze and test reminder, hub/popup/side-panel pages, live updates between hub and page.
 - Cloud sync is covered by tests against a simulated cloud and by request-format tests. **It has not been run against a live Firebase project**, because that needs your credentials. After setup, follow the checklist at the end of [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md).
 - Not run on Windows yet. Nothing in the extension is OS-specific, but it has only been executed on macOS.

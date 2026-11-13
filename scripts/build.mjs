@@ -53,6 +53,8 @@ const bundles = [
   { entryPoints: [path.join(root, 'src/app/main.tsx')], outfile: path.join(dist, 'app.js') },
   { entryPoints: [path.join(root, 'src/background/worker.ts')], outfile: path.join(dist, 'background.js') },
   { entryPoints: [path.join(root, 'src/content/index.ts')], outfile: path.join(dist, 'content.js') },
+  { entryPoints: [path.join(root, 'src/alert/index.ts')], outfile: path.join(dist, 'alert.js') },
+  { entryPoints: [path.join(root, 'src/platform/offscreen.ts')], outfile: path.join(dist, 'offscreen.js') },
 ];
 
 const page = (surface) => `<!doctype html>
@@ -76,6 +78,8 @@ function writeStatic() {
   fs.writeFileSync(path.join(dist, 'app.html'), page('tab'));
   fs.writeFileSync(path.join(dist, 'popup.html'), page('popup'));
   fs.writeFileSync(path.join(dist, 'panel.html'), page('panel'));
+  fs.writeFileSync(path.join(dist, 'alert.html'), fs.readFileSync(path.join(root, 'src/alert/alert.html'), 'utf8'));
+  fs.writeFileSync(path.join(dist, 'offscreen.html'), '<!doctype html>\n<meta charset="utf-8">\n<script src="offscreen.js"></script>\n');
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'src/manifest.json'), 'utf8'));
   manifest.version = pkg.version;
   fs.writeFileSync(path.join(dist, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');

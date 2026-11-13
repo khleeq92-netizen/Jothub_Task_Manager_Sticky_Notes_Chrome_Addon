@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "description": "Sticky notes on any page, a task manager with reminders, ready-made templates and optional cloud sync. Works offline.",
   "minimum_chrome_version": "116",
-  "permissions": ["storage", "unlimitedStorage", "alarms", "notifications", "contextMenus", "sidePanel", "identity"],
+  "permissions": ["storage", "unlimitedStorage", "alarms", "notifications", "offscreen", "contextMenus", "sidePanel", "identity"],
   "host_permissions": [
     "https://identitytoolkit.googleapis.com/*",
     "https://securetoken.googleapis.com/*",

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>⏰ Task reminder — Jot Hub</title>
+<link rel="icon" href="icons/icon48.png">
+<style>
+  :root { --accent: #4f46e5; --bg: #f6f5f1; --card: #ffffff; --text: #1d1b16; --muted: #6b675d; --line: #e4e1d8; color-scheme: light; }
+  :root[data-theme='dark'] { --bg: #17161a; --card: #222127; --text: #f1efe9; --muted: #a9a59b; --line: #34323a; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { display: flex; flex-direction: column; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  header { flex: none; display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--accent); color: #fff; }
+  header .bell { font-size: 20px; animation: ring 1.2s ease-in-out 3; transform-origin: 50% 0; }
+  header h1 { margin: 0; font-size: 15px; font-weight: 650; }
+  main { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 10px; padding: 12px 14px; }
+  .card.p-urgent { border-left-color: #d6336c; }
+  .card.p-high { border-left-color: #e8590c; }
+  .card.p-medium { border-left-color: #f2b705; }
+  .card.p-low { border-left-color: #8a877e; }
+  .top { display: flex; gap: 6px; margin-bottom: 4px; }
+  .badge, .cat { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--text); }
+  .cat { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+  h2 { margin: 0 0 2px; font-size: 17px; line-height: 1.3; overflow-wrap: anywhere; }
+  .when { margin: 0; font-weight: 600; color: var(--accent); }
+  :root[data-theme='dark'] .when { color: color-mix(in srgb, var(--accent) 60%, white); }
+  .desc { margin: 6px 0 0; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .snooze { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; color: var(--muted); font-size: 12px; }
+  button { font: inherit; cursor: pointer; border-radius: 8px; }
+  .btn { padding: 6px 12px; border: 1px solid var(--line); background: var(--card); color: var(--text); font-weight: 600; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+  .chip { padding: 3px 10px; border: 1px solid var(--line); background: transparent; color: var(--text); border-radius: 999px; font-size: 12px; }
+  button:hover { filter: brightness(0.95); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button:disabled { opacity: 0.6; cursor: default; }
+  @keyframes ring { 0%, 100% { transform: rotate(0); } 15% { transform: rotate(14deg); } 30% { transform: rotate(-12deg); } 45% { transform: rotate(8deg); } 60% { transform: rotate(-6deg); } }
+</style>
+</head>
+<body>
+<header><span class="bell" aria-hidden="true">⏰</span><h1 id="heading">Task reminder</h1></header>
+<main id="list" aria-live="assertive"></main>
+<script src="alert.js"></script>
+</body>
+</html>

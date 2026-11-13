@@ -201,6 +201,51 @@ try {
   await shadow(() => document.querySelector('jot-hub-notes').shadowRoot.querySelector('.toast button').click());
   check('Undo puts the note back on the page', (await until(async () => (await noteSel()) === 1)) === true);
 
+  // ---- reminder alerts: pop-up window, sound, snooze, test button ----
+  const pad = (n) => String(n).padStart(2, '0');
+  const now = new Date();
+  const dueTask = {
+    id: 'e2e-due', type: 'task', createdAt: Date.now(), updatedAt: Date.now(), deletedAt: null,
+    title: 'Pay the electricity bill', description: 'Before the office closes.', start: '',
+    due: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`, dueTime: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+    priority: 'urgent', category: '', tags: [], status: 'pending', completedAt: null, recurrence: 'none',
+    subtasks: [], noteIds: [], reminder: 0, favorite: false, sourceUrl: '',
+  };
+  await sw((t) => chrome.storage.local.set({ ['r:' + t.id]: t }), dueTask);
+  const alertTarget = await browser.waitForTarget((t) => t.url().endsWith('/alert.html'), { timeout: 8000 }).catch(() => null);
+  const alertPage = await alertTarget?.page();
+  const alertTitle = await until(() => alertPage?.evaluate(() => document.querySelector('.card h2')?.textContent));
+  const alertWindow = await sw(async () => (await chrome.windows.getAll()).find((w) => w.type === 'popup'));
+  check('a due task opens a reminder window in front', alertTitle === 'Pay the electricity bill' && !!alertWindow?.focused, alertWindow ? `${alertWindow.width}x${alertWindow.height}` : 'no window');
+  const chime = await sw(() => chrome.runtime.sendMessage({ target: 'jh-offscreen', action: 'status' }).catch(() => null));
+  check('the reminder chime plays', !!chime?.playing);
+  const notified = await sw(() => chrome.notifications.getAll());
+  check('a system notification is shown as well', 'task:e2e-due' in notified);
+  await alertPage.evaluate(() => document.querySelector('.chip').click());
+  const snoozed = await until(async () => {
+    const s = await sw(() => chrome.storage.local.get('local:snoozes'));
+    const alarm = await sw(() => chrome.alarms.get('reminder'));
+    return s['local:snoozes']?.['e2e-due'] && alarm ? Math.round((alarm.scheduledTime - Date.now()) / 60000) : null;
+  });
+  const quiet = await until(() => sw(async () => (await chrome.runtime.getContexts({ contextTypes: ['OFFSCREEN_DOCUMENT'] })).length === 0));
+  const windowGone = await until(async () => !(await browser.targets()).some((t) => t.url().endsWith('/alert.html')));
+  check('Snooze stops the sound, closes the window and reschedules', snoozed === 5 && !!quiet && !!windowGone, `next alert in ${snoozed} min`);
+  const settingsPage = await browser.newPage();
+  await settingsPage.goto(`chrome-extension://${id}/app.html#/settings`);
+  const testButton = await until(() => settingsPage.evaluate(() => {
+    const b = [...document.querySelectorAll('button')].find((x) => x.textContent === 'Send test reminder');
+    b?.click();
+    return !!b;
+  }));
+  if (!testButton) throw new Error('Send test reminder button not found');
+  const testTarget = await browser.waitForTarget((t) => t.url().endsWith('/alert.html'), { timeout: 8000 }).catch(() => null);
+  const testPage = await testTarget?.page();
+  const testText = await until(() => testPage?.evaluate(() => document.querySelector('.card h2')?.textContent));
+  await testPage?.evaluate(() => document.querySelector('.btn.primary').click());
+  const testGone = await until(async () => !(await browser.targets()).some((t) => t.url().endsWith('/alert.html')));
+  check('Test reminder opens and closes the reminder window', testText === 'This is a test reminder' && !!testGone);
+  await settingsPage.close();
+
   // ---- sync stays off (and harmless) without an account ----
   const status = await sw(async () => (await chrome.storage.local.get('local:syncStatus'))['local:syncStatus'] ?? { state: 'off' });
   check('cloud sync is off until the user signs in', status.state === 'off');
