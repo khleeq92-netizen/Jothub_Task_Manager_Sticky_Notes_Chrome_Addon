@@ -22,8 +22,8 @@ export function startBackground() {
 
   async function setup() {
     await p.menus.setup([
-      { id: 'jh-note-selection', title: 'Add selection to a new sticky note', contexts: ['selection'] },
-      { id: 'jh-note-page', title: 'New sticky note on this page', contexts: ['page'] },
+      { id: 'jh-note-selection', title: 'Add selection to a new floating note', contexts: ['selection'] },
+      { id: 'jh-note-page', title: 'New floating note on this page', contexts: ['page'] },
       { id: 'jh-task', title: 'Create a task from this page', contexts: ['page', 'selection'] },
     ]);
     await p.alarms.set('sync', { periodInMinutes: 15 });

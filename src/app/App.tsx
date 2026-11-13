@@ -184,7 +184,7 @@ export function App() {
           <div className="quick-bar" role="toolbar" aria-label="Quick actions">
             <button className="btn primary compact" title="New note (Alt+N)" onClick={() => createNote()}><FilePlus2 size={16} /><span>Note</span></button>
             <button className="btn compact" title="New task (Alt+T)" onClick={() => createTask()}><ListPlus size={16} /><span>Task</span></button>
-            {platform.name === 'chrome' && <IconButton label="Sticky note on the current page" onClick={() => void stickyOnPage()}><Globe size={17} /></IconButton>}
+            {platform.name === 'chrome' && <IconButton label="Floating note on the current page" onClick={() => void stickyOnPage()}><Globe size={17} /></IconButton>}
             {platform.sidePanel.supported && surface() !== 'panel' && <IconButton label="Keep open in the side panel" onClick={() => void openPanel()}><PanelRight size={17} /></IconButton>}
             {surface() !== 'window' && <IconButton label="Open in a floating window" onClick={() => void platform.windows.popout(platform.runtime.url('app.html') + '?surface=window' + location.hash, 480, 720)}><AppWindow size={17} /></IconButton>}
             {surface() !== 'tab' && <IconButton label="Open the full hub in a tab" onClick={() => void platform.tabs.open(platform.runtime.url('app.html') + location.hash)}><ExternalLink size={17} /></IconButton>}

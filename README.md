@@ -12,7 +12,7 @@ Works in Chrome on **Windows and macOS** (same package for both). Requires Chrom
 
 You can install from the ZIP or from the `dist/` folder — they contain the same build.
 
-1. Unzip `task-mark-stickynote-extension-v2.1.3.zip` to a folder you will keep (for example `Documents/Task-Mark-stickynote`).
+1. Unzip `task-mark-stickynote-extension-v2.1.4.zip` to a folder you will keep (for example `Documents/Task-Mark-stickynote`).
    Or skip this and use the `dist/` folder inside this project.
 2. Open `chrome://extensions` in Chrome.
 3. Turn on **Developer mode** (top right).
@@ -31,7 +31,7 @@ The steps are identical on Windows and Mac. To update later, replace the folder'
 | Side panel button (top bar) | Keeps the hub open beside the page while you switch tabs. |
 | Floating window button | Opens the hub in its own window you can drag to another monitor. |
 | Open-in-tab button | The full-size hub. |
-| Right-click a page | **New sticky note on this page**, **Add selection to a new sticky note**, **Create a task from this page**. |
+| Right-click a page | **New floating note on this page**, **Add selection to a new floating note**, **Create a task from this page**. |
 
 ### Notes
 
@@ -67,7 +67,7 @@ Eleven ready-made templates (Daily Planner, Weekly Planner, Monthly Goals, Meeti
 | --- | --- |
 | `Alt+Shift+J` | Open the toolbar popup |
 | `Alt+Shift+S` | Open or close the side panel |
-| `Alt+Shift+N` | New sticky note on the current page |
+| `Alt+Shift+N` | New floating note on the current page |
 | `Alt+Shift+T` | Quick task from the current page |
 | *(not set)* | Open the full hub in a tab — assign any key you like |
 | `Ctrl/⌘+K` | Search everything (inside the hub) |

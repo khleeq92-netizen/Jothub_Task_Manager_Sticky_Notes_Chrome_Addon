@@ -377,7 +377,7 @@ export function DashboardView() {
       <div className="quick-create">
         <button className="btn primary" onClick={() => createNote()}><FileText size={16} /> New note</button>
         <button className="btn primary" onClick={() => createTask({ due: t })}><CheckSquare size={16} /> New task</button>
-        {platform.name === 'chrome' && <button className="btn" onClick={() => void stickyOnPage()}><Globe size={16} /> Sticky on this page</button>}
+        {platform.name === 'chrome' && <button className="btn" onClick={() => void stickyOnPage()}><Globe size={16} /> Floating note on this page</button>}
         <button className="btn" onClick={() => go('calendar')}><CalendarDays size={16} /> Calendar</button>
       </div>
       <div className="widgets">

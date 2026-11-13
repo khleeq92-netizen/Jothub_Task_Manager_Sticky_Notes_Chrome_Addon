@@ -8,7 +8,7 @@ For a build that syncs, also give it `firebase-settings.txt` (private; rename it
 
 ## What this is
 
-**Task-Mark-stickynote** is a Chrome extension (Manifest V3, React + TypeScript) for personal use on Chrome for **Windows and macOS**: sticky notes that float on web pages, a task manager with reminders, templates, backups, and optional cloud sync through the owner's own Firebase project. It is local-first and works fully offline and without an account. Version 2.1.3.
+**Task-Mark-stickynote** is a Chrome extension (Manifest V3, React + TypeScript) for personal use on Chrome for **Windows and macOS**: sticky notes that float on web pages, a task manager with reminders, templates, backups, and optional cloud sync through the owner's own Firebase project. It is local-first and works fully offline and without an account. Version 2.1.4.
 
 The owner wants complete, working features with few questions — no roadmaps, placeholders or mock features.
 
@@ -41,7 +41,7 @@ Needs Node.js 20+.
 
 - `npm install`
 - `npm run build` → `dist/` (load this folder via `chrome://extensions` → Developer mode → Load unpacked)
-- `npm run package` → `task-mark-stickynote-extension-v2.1.3.zip`
+- `npm run package` → `task-mark-stickynote-extension-v2.1.4.zip`
 - `npm test`, `npm run typecheck`, `npm run e2e`, `npm run check` (all of them)
 - `node scripts/bundle-source.mjs` → regenerates the `handoff/` files
 
