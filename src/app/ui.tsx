@@ -264,3 +264,68 @@ export function PageHead({ title, subtitle, children }: { title: string; subtitl
     </header>
   );
 }
+
+// ---- multi-select ----------------------------------------------------------
+
+export interface Selection {
+  active: boolean;
+  ids: Set<string>;
+  start(): void;
+  stop(): void;
+  toggle(id: string): void;
+  set(ids: string[]): void;
+}
+
+/** Select mode for a list. Esc leaves it (unless a dialog is open). */
+export function useSelection(): Selection {
+  const [active, setActive] = useState(false);
+  const [ids, setIds] = useState<Set<string>>(() => new Set());
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || document.querySelector('.overlay')) return;
+      setActive(false);
+      setIds(new Set());
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [active]);
+  return {
+    active,
+    ids,
+    start: () => setActive(true),
+    stop: () => {
+      setActive(false);
+      setIds(new Set());
+    },
+    toggle: (id) =>
+      setIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        return next;
+      }),
+    set: (list) => setIds(new Set(list)),
+  };
+}
+
+/** The bar shown in select mode. `all` is what the list currently shows; actions get the chosen ids. */
+export function SelectBar({ selection, all, noun, children }: { selection: Selection; all: string[]; noun: [string, string]; children: (chosen: string[]) => ReactNode }) {
+  const chosen = all.filter((id) => selection.ids.has(id));
+  const everything = all.length > 0 && chosen.length === all.length;
+  return (
+    <div className="select-bar" role="toolbar" aria-label="Selection">
+      <strong className="select-count">{chosen.length ? `${chosen.length} ${chosen.length === 1 ? noun[0] : noun[1]} selected` : `Select ${noun[1]}`}</strong>
+      <button type="button" className="btn small" onClick={() => selection.set(everything ? [] : all)} disabled={!all.length}>
+        {everything ? 'Clear' : `Select all (${all.length})`}
+      </button>
+      <span className="select-actions">{children(chosen)}</span>
+      <button type="button" className="btn small ghost" onClick={selection.stop}>Cancel</button>
+    </div>
+  );
+}
+
+/** The round tick shown on cards and rows in select mode. */
+export function SelectMark({ on }: { on: boolean }) {
+  return <span className={`select-mark ${on ? 'on' : ''}`} aria-hidden="true">{on && <Check size={13} strokeWidth={3} />}</span>;
+}

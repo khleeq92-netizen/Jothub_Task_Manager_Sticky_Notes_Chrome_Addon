@@ -11,7 +11,7 @@ import { sanitizeHtml } from '../core/sanitize';
 import { displayStatus, PRIORITY_LABEL, RECURRENCE_LABEL, REMINDER_OPTIONS, STATUS_LABEL, subtaskProgress } from '../core/tasks';
 import { FONTS, newTemplate, NOTE_HEX, PRIORITIES, RECURRENCES, uid, type FontKey, type Note, type NoteScope, type Task, type TaskStatus } from '../core/types';
 import { moveToTrash, patch, restoreFromTrash, saveRecord, toggleTask, useData, useNow } from './store';
-import { ColorDots, Field, go, IconButton, Menu, Modal, toast } from './ui';
+import { ColorDots, Field, go, IconButton, Menu, Modal, SelectMark, toast } from './ui';
 
 // ---- rich text editor --------------------------------------------------------
 
@@ -98,12 +98,13 @@ export function RichEditor({ html, onChange, placeholder = 'Start writing…', f
 
 // ---- notes -----------------------------------------------------------------------
 
-export function NoteCard({ note, active, onOpen }: { note: Note; active?: boolean; onOpen: () => void }) {
+export function NoteCard({ note, active, onOpen, selected }: { note: Note; active?: boolean; onOpen: () => void; /** set in select mode */ selected?: boolean }) {
   const now = useNow();
   const { folders } = useData();
   const folder = folders.find((f) => f.id === note.folderId);
   return (
-    <button type="button" className={`note-card ${active ? 'active' : ''}`} style={{ background: NOTE_HEX[note.color] }} onClick={onOpen}>
+    <button type="button" className={`note-card ${active ? 'active' : ''} ${selected ? 'selected' : ''}`} style={{ background: NOTE_HEX[note.color] }} onClick={onOpen} aria-pressed={selected === undefined ? undefined : selected}>
+      {selected !== undefined && <SelectMark on={selected} />}
       <span className="note-card-title">
         {note.pinned && <Pin size={13} aria-label="Pinned" />}
         {noteTitle(note)}
@@ -232,16 +233,22 @@ export function NoteEditor({ id, onBack }: { id: string; onBack: () => void }) {
 
 // ---- tasks -------------------------------------------------------------------------
 
-export function TaskRow({ task, onOpen, showDate = true }: { task: Task; onOpen?: () => void; showDate?: boolean }) {
+export function TaskRow({ task, onOpen, showDate = true, selected, onSelect }: { task: Task; onOpen?: () => void; showDate?: boolean; /** set in select mode */ selected?: boolean; onSelect?: () => void }) {
   const now = useNow();
   const status = displayStatus(task, now);
   const done = status === 'completed';
   return (
-    <div className={`task-row ${done ? 'done' : ''} ${status === 'overdue' ? 'overdue' : ''}`}>
-      <button type="button" role="checkbox" aria-checked={done} aria-label={done ? 'Mark as not done' : 'Mark as done'} className={`check prio-${task.priority}`} onClick={() => toggleTask(task.id)}>
-        {done && <Check size={13} strokeWidth={3} />}
-      </button>
-      <button type="button" className="task-main" onClick={onOpen ?? (() => go('tasks', task.id))}>
+    <div className={`task-row ${done ? 'done' : ''} ${status === 'overdue' ? 'overdue' : ''} ${selected ? 'selected' : ''}`}>
+      {selected !== undefined ? (
+        <button type="button" role="checkbox" aria-checked={selected} aria-label={`Select ${task.title || 'untitled task'}`} className="select-check" onClick={onSelect}>
+          <SelectMark on={selected} />
+        </button>
+      ) : (
+        <button type="button" role="checkbox" aria-checked={done} aria-label={done ? 'Mark as not done' : 'Mark as done'} className={`check prio-${task.priority}`} onClick={() => toggleTask(task.id)}>
+          {done && <Check size={13} strokeWidth={3} />}
+        </button>
+      )}
+      <button type="button" className="task-main" onClick={selected !== undefined ? onSelect : (onOpen ?? (() => go('tasks', task.id)))}>
         <span className="task-title">{task.title || 'Untitled task'}</span>
         <span className="task-meta">
           {showDate && task.due && (

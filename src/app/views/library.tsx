@@ -1,4 +1,4 @@
-import { Copy, FileText, Folder as FolderIcon, FolderPlus, Globe, LayoutTemplate, Pencil, Plus, RotateCcw, Search, Star, Trash2 } from 'lucide-react';
+import { CheckSquare, Copy, FileText, Folder as FolderIcon, FolderPlus, Globe, LayoutTemplate, Pencil, Plus, RotateCcw, Search, Star, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { timeAgo } from '../../core/dates';
 import { noteTitle } from '../../core/notes';
@@ -6,8 +6,8 @@ import { BUILTIN_TEMPLATES } from '../../core/templates';
 import { newFolder, newTemplate, NOTE_COLORS, NOTE_HEX, type AnyRecord, type Folder, type NoteColor, type Template } from '../../core/types';
 import { applyTemplate, createNote } from '../actions';
 import { NoteCard, NoteEditor, RichEditor, TaskRow } from '../components';
-import { moveToTrash, patch, purge, restoreFromTrash, saveRecord, saveRecords, useData, useNow } from '../store';
-import { ColorDots, confirmDialog, Empty, Field, go, IconButton, Modal, PageHead, toast } from '../ui';
+import { moveToTrash, patch, purge, restoreFromTrash, restoreMany, saveRecord, saveRecords, trashMany, useData, useNow } from '../store';
+import { ColorDots, confirmDialog, Empty, Field, go, IconButton, Modal, PageHead, SelectBar, SelectMark, toast, useSelection } from '../ui';
 
 // The Folders view hands its selection to My Notes through this.
 let presetFolder = '';
@@ -45,11 +45,19 @@ export function NotesView({ id }: { id: string }) {
   }, [notes, query, folder, color, attached, sort]);
 
   const filtering = !!(query || folder || color || attached);
+  const selection = useSelection();
+  const trashChosen = (chosen: string[]) => {
+    const moved = trashMany(chosen);
+    selection.stop();
+    if (id && moved.includes(id)) go('notes');
+    toast(`${moved.length} note${moved.length === 1 ? '' : 's'} moved to trash`, { label: 'Undo', run: () => restoreMany(moved) });
+  };
 
   return (
     <div className={`split ${id ? 'has-detail' : ''}`}>
       <div className="split-list">
         <PageHead title="My Notes" subtitle={`${notes.length} note${notes.length === 1 ? '' : 's'}`}>
+          {notes.length > 0 && !selection.active && <button className="btn" onClick={selection.start}><CheckSquare size={16} /> Select</button>}
           <button className="btn primary" onClick={() => createNote(folder && folder !== 'none' ? { folderId: folder } : {})}><Plus size={16} /> New note</button>
         </PageHead>
         <div className="filters">
@@ -73,9 +81,20 @@ export function NotesView({ id }: { id: string }) {
           </select>
           <IconButton label="Only notes that float on web pages" active={attached} onClick={() => setAttached(!attached)}><Globe size={16} /></IconButton>
         </div>
+        {selection.active && (
+          <SelectBar selection={selection} all={list.map((n) => n.id)} noun={['note', 'notes']}>
+            {(chosen) => <button type="button" className="btn small danger" disabled={!chosen.length} onClick={() => trashChosen(chosen)}><Trash2 size={14} /> Move to trash</button>}
+          </SelectBar>
+        )}
         {list.length ? (
           <div className="note-grid">
-            {list.map((n) => <NoteCard key={n.id} note={n} active={n.id === id} onOpen={() => go('notes', n.id)} />)}
+            {list.map((n) =>
+              selection.active ? (
+                <NoteCard key={n.id} note={n} selected={selection.ids.has(n.id)} onOpen={() => selection.toggle(n.id)} />
+              ) : (
+                <NoteCard key={n.id} note={n} active={n.id === id} onOpen={() => go('notes', n.id)} />
+              ),
+            )}
           </div>
         ) : filtering ? (
           <Empty icon={<Search size={26} />} title="No notes match" hint="Try a different search or clear the filters." />
@@ -231,16 +250,55 @@ export function TrashView() {
     const ok = await confirmDialog({ title: `Delete “${describe(r).name}” forever?`, message: 'This cannot be undone.', confirmLabel: 'Delete forever', danger: true });
     if (ok) purge(r.id);
   };
+  const selection = useSelection();
+  const restoreChosen = (chosen: string[]) => {
+    const n = restoreMany(chosen);
+    selection.stop();
+    toast(`${n} item${n === 1 ? '' : 's'} restored`);
+  };
+  const purgeChosen = async (chosen: string[]) => {
+    const ok = await confirmDialog({
+      title: `Delete ${chosen.length} item${chosen.length === 1 ? '' : 's'} forever?`,
+      message: 'They will be permanently deleted from this device and from the cloud. This cannot be undone.',
+      confirmLabel: 'Delete forever',
+      danger: true,
+    });
+    if (!ok) return;
+    purge(...chosen);
+    selection.stop();
+  };
 
   return (
     <div className="page">
       <PageHead title="Trash" subtitle="Deleted items stay here for 30 days.">
+        {trash.length > 0 && !selection.active && <button className="btn" onClick={selection.start}><CheckSquare size={16} /> Select</button>}
         {trash.length > 0 && <button className="btn danger-quiet" onClick={empty}><Trash2 size={15} /> Empty trash</button>}
       </PageHead>
+      {selection.active && (
+        <SelectBar selection={selection} all={trash.map((r) => r.id)} noun={['item', 'items']}>
+          {(chosen) => (
+            <>
+              <button type="button" className="btn small" disabled={!chosen.length} onClick={() => restoreChosen(chosen)}><RotateCcw size={14} /> Restore</button>
+              <button type="button" className="btn small danger" disabled={!chosen.length} onClick={() => void purgeChosen(chosen)}><Trash2 size={14} /> Delete forever</button>
+            </>
+          )}
+        </SelectBar>
+      )}
       {trash.length ? (
         <div className="panel list">
           {trash.map((r) => {
             const d = describe(r);
+            if (selection.active) {
+              const on = selection.ids.has(r.id);
+              return (
+                <button key={r.id} type="button" className={`trash-row selectable ${on ? 'selected' : ''}`} role="checkbox" aria-checked={on} onClick={() => selection.toggle(r.id)}>
+                  <SelectMark on={on} />
+                  <span className="badge">{d.kind}</span>
+                  <span className="grow ellipsis">{d.name}</span>
+                  <span className="muted small">deleted {timeAgo(r.deletedAt ?? now, now)}</span>
+                </button>
+              );
+            }
             return (
               <div key={r.id} className="trash-row">
                 <span className="badge">{d.kind}</span>

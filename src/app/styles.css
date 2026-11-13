@@ -384,3 +384,18 @@ select { padding-right: 6px; }
 .shortcuts-sub { margin: 18px 0 6px; font-size: 13px; font-weight: 650; color: var(--muted); }
 .shortcut-change { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
 .shortcut-change p { flex: 1 1 240px; margin: 0; }
+
+/* multi-select */
+.select-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0; padding: 8px 10px; border: 1px solid var(--accent); border-radius: 10px; background: var(--surface); box-shadow: var(--shadow); }
+.select-count { margin-right: auto; font-size: 13.5px; }
+.select-actions { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.select-mark { display: inline-grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 50%; border: 2px solid currentColor; opacity: 0.55; background: rgba(255, 255, 255, 0.6); color: inherit; }
+.select-mark.on { opacity: 1; border-color: var(--accent); background: var(--accent); color: #fff; }
+.note-card { position: relative; }
+.note-card > .select-mark { position: absolute; top: 8px; right: 8px; color: var(--ink); }
+.note-card.selected { outline: 3px solid var(--accent); outline-offset: 2px; }
+.select-check { display: grid; place-items: center; width: 22px; height: 22px; margin-top: 1px; color: var(--muted); }
+.task-row.selected, .trash-row.selected { background: var(--accent-soft); }
+.trash-row.selectable { width: 100%; text-align: left; cursor: pointer; }
+.trash-row.selectable .select-mark { color: var(--muted); }

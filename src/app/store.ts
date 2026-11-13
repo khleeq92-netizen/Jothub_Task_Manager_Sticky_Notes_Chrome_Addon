@@ -95,6 +95,35 @@ export function purge(...ids: string[]) {
   void putRaw(stubs);
 }
 
+// ---- bulk actions (multi-select) ----
+
+/** Moves records to the trash in one write. Returns the ids actually moved. */
+export function trashMany(ids: string[]): string[] {
+  const now = Date.now();
+  const list = ids.map((id) => records.get(id)).filter((r): r is AnyRecord => !!r && !r.purged && !r.deletedAt);
+  if (list.length) saveRecords(...list.map((r) => ({ ...r, deletedAt: now })));
+  return list.map((r) => r.id);
+}
+
+export function restoreMany(ids: string[]): number {
+  const list = ids.map((id) => records.get(id)).filter((r): r is AnyRecord => !!r && !r.purged && !!r.deletedAt);
+  if (list.length) saveRecords(...list.map((r) => ({ ...r, deletedAt: null })));
+  return list.length;
+}
+
+/** Marks open tasks done (a repeating task gets its next copy, as with a single tick). */
+export function completeMany(ids: string[]): number {
+  const changed: AnyRecord[] = [];
+  for (const id of ids) {
+    const task = records.get(id);
+    if (!task || task.type !== 'task' || task.deletedAt || task.status === 'completed') continue;
+    const { done, next } = completeTask(task);
+    changed.push(done, ...(next ? [next] : []));
+  }
+  if (changed.length) saveRecords(...changed);
+  return changed.filter((r) => r.type === 'task' && r.status === 'completed').length;
+}
+
 export function toggleTask(id: string) {
   const task = records.get(id);
   if (!task || task.type !== 'task') return;

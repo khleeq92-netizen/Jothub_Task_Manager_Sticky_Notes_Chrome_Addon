@@ -282,6 +282,26 @@ try {
   check('Test reminder opens and closes the reminder window', testText === 'This is a test reminder' && !!testGone);
   await settingsPage.close();
 
+  // ---- multi-select: move several notes to the trash at once, then Undo ----
+  const bulk = await browser.newPage();
+  await bulk.goto(`chrome-extension://${id}/app.html#/notes`);
+  const pressButton = (label) => bulk.evaluate((text) => {
+    const b = [...document.querySelectorAll('button')].find((x) => x.textContent.trim().startsWith(text) && !x.disabled);
+    b?.click();
+    return !!b;
+  }, label);
+  await until(() => bulk.evaluate(() => document.querySelectorAll('.note-card').length > 0));
+  const liveNotes = async () => (await records()).filter((r) => r.type === 'note' && !r.deletedAt && !r.purged).length;
+  const before = await liveNotes();
+  await pressButton('Select');
+  await until(() => pressButton('Select all'));
+  await pressButton('Move to trash');
+  const allTrashed = await until(async () => (await liveNotes()) === 0);
+  await until(() => pressButton('Undo'));
+  const allBack = await until(async () => (await liveNotes()) === before);
+  check('Select all moves every note to the trash, and Undo brings them back', !!allTrashed && !!allBack, `${before} notes`);
+  await bulk.close();
+
   // ---- sync stays off (and harmless) without an account ----
   const status = await sw(async () => (await chrome.storage.local.get('local:syncStatus'))['local:syncStatus'] ?? { state: 'off' });
   check('cloud sync is off until the user signs in', status.state === 'off');

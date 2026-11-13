@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, CalendarDays, CheckSquare, ChevronLeft, ChevronRight, Eye, EyeOff, FileText, Globe, Plus, RefreshCw, Save, SlidersHorizontal } from 'lucide-react';
+import { ArrowDown, ArrowUp, CalendarDays, Check, CheckSquare, ChevronLeft, ChevronRight, Eye, EyeOff, FileText, Globe, Plus, RefreshCw, Save, SlidersHorizontal, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { addDays, addMonths, dateStr, friendlyDate, longDate, parseDate, startOfMonth, startOfWeek, timeAgo, today } from '../../core/dates';
 import { compareTasks, displayStatus, isOpen, PRIORITY_LABEL } from '../../core/tasks';
@@ -8,8 +8,8 @@ import type { PublicAuth } from '../../sync/auth';
 import { platform } from '../../platform';
 import { createNote, createTask, requestSync, stickyOnPage } from '../actions';
 import { NoteCard, TaskEditor, TaskRow } from '../components';
-import { updateSettings, useData, useLocal, useNow } from '../store';
-import { Empty, go, IconButton, Modal, PageHead, toast } from '../ui';
+import { completeMany, restoreMany, trashMany, updateSettings, useData, useLocal, useNow } from '../store';
+import { Empty, go, IconButton, Modal, PageHead, SelectBar, toast, useSelection } from '../ui';
 
 // ---- shared: sync status ------------------------------------------------------
 
@@ -114,6 +114,20 @@ export function TasksView({ id }: { id: string }) {
 
   const visible = groups.filter((g) => g.tasks.length || tab === 'week');
   const total = groups.reduce((n, g) => n + g.tasks.length, 0);
+  const shownIds = [...new Set(visible.flatMap((g) => g.tasks.map((x) => x.id)))];
+
+  const selection = useSelection();
+  const trashChosen = (chosen: string[]) => {
+    const moved = trashMany(chosen);
+    selection.stop();
+    if (id && moved.includes(id)) go('tasks');
+    toast(`${moved.length} task${moved.length === 1 ? '' : 's'} moved to trash`, { label: 'Undo', run: () => restoreMany(moved) });
+  };
+  const completeChosen = (chosen: string[]) => {
+    const n = completeMany(chosen);
+    selection.stop();
+    toast(n ? `${n} task${n === 1 ? '' : 's'} marked done` : 'Those tasks were already done');
+  };
 
   const add = () => {
     if (!quick.trim()) return;
@@ -128,6 +142,7 @@ export function TasksView({ id }: { id: string }) {
   return (
     <div className="page">
       <PageHead title="Tasks" subtitle={`${tasks.filter(isOpen).length} open · ${tasks.filter((x) => displayStatus(x, now) === 'overdue').length} overdue`}>
+        {tasks.length > 0 && !selection.active && <button className="btn" onClick={selection.start}><CheckSquare size={16} /> Select</button>}
         <button className="btn primary" onClick={() => createTask({ due: tab === 'today' ? addDays(t, offset) : '' })}><Plus size={16} /> New task</button>
       </PageHead>
 
@@ -172,7 +187,18 @@ export function TasksView({ id }: { id: string }) {
         )}
       </div>
 
-      {tab !== 'done' && (
+      {selection.active && (
+        <SelectBar selection={selection} all={shownIds} noun={['task', 'tasks']}>
+          {(chosen) => (
+            <>
+              <button type="button" className="btn small" disabled={!chosen.length} onClick={() => completeChosen(chosen)}><Check size={14} /> Mark done</button>
+              <button type="button" className="btn small danger" disabled={!chosen.length} onClick={() => trashChosen(chosen)}><Trash2 size={14} /> Move to trash</button>
+            </>
+          )}
+        </SelectBar>
+      )}
+
+      {tab !== 'done' && !selection.active && (
         <div className="quick-add">
           <Plus size={16} className="muted" />
           <input value={quick} placeholder={tab === 'today' ? 'Add a task for this day and press Enter' : 'Add a task and press Enter'} aria-label="Quick add task" onChange={(e) => setQuick(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} />
@@ -186,7 +212,15 @@ export function TasksView({ id }: { id: string }) {
           <section key={g.label} className="section">
             <h2 className={g.tone === 'bad' ? 'bad' : ''}>{g.label} {g.tasks.length > 0 && <span className="count">{g.tasks.length}</span>}</h2>
             {g.tasks.length ? (
-              <div className="panel list">{g.tasks.map((x) => <TaskRow key={x.id} task={x} showDate={g.showDate !== false} />)}</div>
+              <div className="panel list">
+                {g.tasks.map((x) =>
+                  selection.active ? (
+                    <TaskRow key={x.id} task={x} showDate={g.showDate !== false} selected={selection.ids.has(x.id)} onSelect={() => selection.toggle(x.id)} />
+                  ) : (
+                    <TaskRow key={x.id} task={x} showDate={g.showDate !== false} />
+                  ),
+                )}
+              </div>
             ) : (
               <p className="muted small nothing">Nothing due</p>
             )}

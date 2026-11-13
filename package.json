@@ -1,6 +1,6 @@
 {
   "name": "task-mark-stickynote",
-  "version": "2.1.5",
+  "version": "2.2.0",
   "private": true,
   "type": "module",
   "description": "Task-Mark-stickynote \u2014 tasks, sticky notes and reminders in a Chrome extension (Manifest V3).",

@@ -12,7 +12,7 @@ Works in Chrome on **Windows and macOS** (same package for both). Requires Chrom
 
 You can install from the ZIP or from the `dist/` folder — they contain the same build.
 
-1. Unzip `task-mark-stickynote-extension-v2.1.5.zip` to a folder you will keep (for example `Documents/Task-Mark-stickynote`).
+1. Unzip `task-mark-stickynote-extension-v2.2.0.zip` to a folder you will keep (for example `Documents/Task-Mark-stickynote`).
    Or skip this and use the `dist/` folder inside this project.
 2. Open `chrome://extensions` in Chrome.
 3. Turn on **Developer mode** (top right).
@@ -37,6 +37,7 @@ The steps are identical on Windows and Mac. To update later, replace the folder'
 
 - Rich text: bold, italic, underline, headings, bullet and numbered lists, checklists, fonts and sizes. Saves as you type.
 - Colors, folders, pin, favorite, search, filters and sorting.
+- **Select several at once:** press **Select**, tick notes (or **Select all** of what the filters show) and move them to the trash in one go, with Undo.
 - **Float on web pages:** attach a note to one page, a whole site, or every website. Floating notes can be dragged, resized, minimized, recolored and edited in place.
 - Focus mode (full-screen, distraction-free), print, and export as Markdown, HTML or text.
 - Save any note as a template.
@@ -45,6 +46,7 @@ The steps are identical on Windows and Mac. To update later, replace the folder'
 
 - Title, description, start date, deadline, due time, priority (low → urgent), category, tags.
 - Status: pending, in progress, completed — plus **overdue**, worked out automatically.
+- **Select several at once:** mark them done or move them to the trash together. The trash has the same: restore or delete forever in bulk.
 - Subtasks, linked notes, repeating tasks (daily, weekdays, weekly, monthly, yearly) and reminders. When a reminder is due, a pop-up window opens in front of whatever you are doing, with a chime that repeats until you respond (up to 30 s) and buttons to mark the task done, open it, dismiss it, or snooze it for 5 min, 15 min or 1 hour. A system notification is shown as well. Pop-up and sound can be switched off per browser profile in Settings → Tasks and reminders, which also has a **Send test reminder** button.
 - Views: All, Day, Week, Month, Completed, and a month **Calendar**.
 - Quick task from any web page (right-click or `Alt+Shift+T`).
@@ -179,6 +181,6 @@ The extension does not read page content or browsing history. The content script
 ## Test status
 
 - 48 unit tests pass.
-- 41 end-to-end checks pass against the built extension (Chrome 157 on macOS, Chromium on Linux): service worker, commands, alarms, floating notes (create, type, format, drag, reload, per-page scoping), quick task, reminder scheduling, the reminder pop-up window, chime, snooze and test reminder, hub/popup/side-panel pages, side-panel open/close tracking, live shortcuts list, dialogs that scroll, live updates between hub and page.
+- 43 end-to-end checks pass against the built extension (Chrome 157 on macOS, Chromium on Linux): service worker, commands, alarms, floating notes (create, type, format, drag, reload, per-page scoping), quick task, reminder scheduling, the reminder pop-up window, chime, snooze and test reminder, hub/popup/side-panel pages, side-panel open/close tracking, live shortcuts list, dialogs that scroll, live updates between hub and page.
 - Cloud sync is covered by tests against a simulated cloud and by request-format tests. **It has not been run against a live Firebase project**, because that needs your credentials. After setup, follow the checklist at the end of [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md).
 - Not run on Windows yet. Nothing in the extension is OS-specific, but it has only been executed on macOS.
