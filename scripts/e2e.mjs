@@ -158,6 +158,27 @@ try {
       await hub.type('.editor-title', 'Renamed in hub');
       const live = await until(() => page.evaluate(() => document.querySelector('jot-hub-notes').shadowRoot.querySelector('.title').value === 'Renamed in hub'));
       check('editing in the hub updates the floating note live', !!live);
+    } else {
+      // the task editor must fit a small window and scroll down to its last controls
+      await hub.setViewport({ width: file === 'popup.html' ? 500 : 380, height: 600 });
+      await hub.evaluate(() => (location.hash = '#/tasks'));
+      const opened = await until(() => hub.evaluate(() => {
+        const button = [...document.querySelectorAll('button')].find((b) => /new task/i.test(b.textContent));
+        button?.click();
+        return !!button;
+      }));
+      if (!opened) throw new Error(`${file}: New task button not found`);
+      await until(() => hub.evaluate(() => !!document.querySelector('.overlay.side .modal-body')));
+      const fit = await hub.evaluate(async () => {
+        const modal = document.querySelector('.overlay.side .modal');
+        const body = modal.querySelector('.modal-body');
+        body.scrollTop = body.scrollHeight;
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+        const last = [...body.querySelectorAll('button')].at(-1).getBoundingClientRect();
+        return { modalH: Math.round(modal.getBoundingClientRect().height), scrolls: body.scrollHeight > body.clientHeight && body.scrollTop > 0, lastVisible: last.bottom <= innerHeight && last.top >= 0 };
+      });
+      check(`${file} task editor fits the window and scrolls`, fit.modalH <= 600 && fit.scrolls && fit.lastVisible, `height=${fit.modalH}`);
+      await hub.keyboard.press('Escape');
     }
     await hub.close();
   }
