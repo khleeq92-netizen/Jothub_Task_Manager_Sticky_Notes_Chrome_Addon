@@ -63,8 +63,8 @@ PRIVATE BY DEFAULT
 **Marquee promo tile (optional):** `promo-marquee-1400x560.png`
 **Store icon:** `store-icon-128.png`
 
-**Official URL:** leave empty. **Homepage URL:** `https://github.com/khleeq92-netizen/Jothub_Task_Manager_Sticky_Notes_Chrome_Addon` (optional)
-**Support URL:** `https://github.com/khleeq92-netizen/Jothub_Task_Manager_Sticky_Notes_Chrome_Addon/issues`
+**Official URL:** leave empty. **Homepage URL:** `https://github.com/khleeq92-netizen/Task_Mark_Sticky_Notes_Chrome_Addon` (optional)
+**Support URL:** `https://github.com/khleeq92-netizen/Task_Mark_Sticky_Notes_Chrome_Addon/issues`
 
 ---
 
@@ -106,7 +106,7 @@ Leave unticked: health, financial and payment information, personal communicatio
 
 **Privacy policy URL:**
 ```
-https://github.com/khleeq92-netizen/Jothub_Task_Manager_Sticky_Notes_Chrome_Addon/blob/main/PRIVACY.md
+https://github.com/khleeq92-netizen/Task_Mark_Sticky_Notes_Chrome_Addon/blob/main/PRIVACY.md
 ```
 
 ---

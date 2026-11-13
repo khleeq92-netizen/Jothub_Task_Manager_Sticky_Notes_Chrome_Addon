@@ -63,4 +63,4 @@ If this policy changes, the new version will be published at this address with a
 ## Contact
 
 Questions or requests (including account deletion): open an issue at
-<https://github.com/khleeq92-netizen/Jothub_Task_Manager_Sticky_Notes_Chrome_Addon/issues>
+<https://github.com/khleeq92-netizen/Task_Mark_Sticky_Notes_Chrome_Addon/issues>
